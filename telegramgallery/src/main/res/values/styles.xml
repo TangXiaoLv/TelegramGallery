@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- POPUP -->
+
+    <style name="PopupAnimation" mce_bogus="1" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_in</item>
+        <item name="android:windowExitAnimation">@anim/popup_out</item>
+    </style>
+
+    <style name="Theme.TMessages" parent="@android:style/Theme.Holo.Light">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBarOverlay">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:itemTextAppearance">@style/ActionBar.Transparent.TMessages.Item</item>
+        <item name="android:listViewStyle">@style/Theme.TMessages.ListView</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector</item>
+        <item name="android:actionBarItemBackground">@drawable/bar_selector_style</item>
+    </style>
+
+    <!--ACTION BAR ITEMS-->
+
+    <style name="ActionBar.Transparent.TMessages.Item" parent="android:TextAppearance.Widget.IconMenu.Item">
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!--LIST VIEW-->
+
+    <style name="Theme.TMessages.ListView" parent="@android:style/Widget.ListView">
+        <item name="android:listSelector">@drawable/list_selector</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:divider">@color/divider</item>
+    </style>
+</resources>
