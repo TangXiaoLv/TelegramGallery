@@ -15,13 +15,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import com.tangxiaolv.telegramgallery.TL.FileLocation;
+import com.tangxiaolv.telegramgallery.TL.TLObject;
 import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
 import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
 import com.tangxiaolv.telegramgallery.Utils.Utilities;
-import com.tangxiaolv.telegramgallery.TL.FileLocation;
-import com.tangxiaolv.telegramgallery.TL.TLObject;
-import com.tangxiaolv.telegramgallery.TL.TL_fileEncryptedLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_fileLocation;
 
 public class ImageReceiver implements NotificationCenter.NotificationCenterDelegate {
 
@@ -144,8 +142,8 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
         }
 
         if ((fileLocation == null && httpUrl == null && thumbLocation == null)
-                || (fileLocation != null && !(fileLocation instanceof TL_fileLocation)
-                        && !(fileLocation instanceof TL_fileEncryptedLocation))) {
+                || (fileLocation != null && !(fileLocation instanceof FileLocation.TL_fileLocation)
+                        && !(fileLocation instanceof FileLocation.TL_fileEncryptedLocation))) {
             recycleBitmap(null, false);
             recycleBitmap(null, true);
             currentKey = null;
@@ -179,7 +177,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
             return;
         }
 
-        if (!(thumbLocation instanceof TL_fileLocation)) {
+        if (!(thumbLocation instanceof FileLocation.TL_fileLocation)) {
             thumbLocation = null;
         }
 

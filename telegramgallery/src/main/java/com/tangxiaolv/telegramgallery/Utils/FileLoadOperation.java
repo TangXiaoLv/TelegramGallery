@@ -3,13 +3,6 @@ package com.tangxiaolv.telegramgallery.Utils;
 import com.tangxiaolv.telegramgallery.TL.Document;
 import com.tangxiaolv.telegramgallery.TL.FileLocation;
 import com.tangxiaolv.telegramgallery.TL.InputFileLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_document;
-import com.tangxiaolv.telegramgallery.TL.TL_documentEncrypted;
-import com.tangxiaolv.telegramgallery.TL.TL_fileEncryptedLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_fileLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_inputDocumentFileLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_inputEncryptedFileLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_inputFileLocation;
 import com.tangxiaolv.telegramgallery.TL.TL_upload_file;
 
 import java.io.File;
@@ -71,8 +64,8 @@ public class FileLoadOperation {
     }
 
     public FileLoadOperation(FileLocation photoLocation, String extension, int size) {
-        if (photoLocation instanceof TL_fileEncryptedLocation) {
-            location = new TL_inputEncryptedFileLocation();
+        if (photoLocation instanceof FileLocation.TL_fileEncryptedLocation) {
+            location = new InputFileLocation.TL_inputEncryptedFileLocation();
             location.id = photoLocation.volume_id;
             location.volume_id = photoLocation.volume_id;
             location.access_hash = photoLocation.secret;
@@ -81,8 +74,8 @@ public class FileLoadOperation {
             System.arraycopy(photoLocation.iv, 0, iv, 0, iv.length);
             key = photoLocation.key;
             datacenter_id = photoLocation.dc_id;
-        } else if (photoLocation instanceof TL_fileLocation) {
-            location = new TL_inputFileLocation();
+        } else if (photoLocation instanceof FileLocation.TL_fileLocation) {
+            location = new InputFileLocation.TL_inputFileLocation();
             location.volume_id = photoLocation.volume_id;
             location.secret = photoLocation.secret;
             location.local_id = photoLocation.local_id;
@@ -94,16 +87,16 @@ public class FileLoadOperation {
 
     public FileLoadOperation(Document documentLocation) {
         try {
-            if (documentLocation instanceof TL_documentEncrypted) {
-                location = new TL_inputEncryptedFileLocation();
+            if (documentLocation instanceof Document.TL_documentEncrypted) {
+                location = new InputFileLocation.TL_inputEncryptedFileLocation();
                 location.id = documentLocation.id;
                 location.access_hash = documentLocation.access_hash;
                 datacenter_id = documentLocation.dc_id;
                 iv = new byte[32];
                 System.arraycopy(documentLocation.iv, 0, iv, 0, iv.length);
                 key = documentLocation.key;
-            } else if (documentLocation instanceof TL_document) {
-                location = new TL_inputDocumentFileLocation();
+            } else if (documentLocation instanceof Document.TL_document) {
+                location = new InputFileLocation.TL_inputDocumentFileLocation();
                 location.id = documentLocation.id;
                 location.access_hash = documentLocation.access_hash;
                 datacenter_id = documentLocation.dc_id;

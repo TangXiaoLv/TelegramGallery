@@ -96,12 +96,10 @@ public class LocaleController {
     public LocaleController() {
         addRules(new String[] {
                 "bem", "brx", "da", "de", "el", "en", "eo", "es", "et", "fi", "fo", "gl", "he",
-                "iw", "it", "nb",
-                "nl", "nn", "no", "sv", "af", "bg", "bn", "ca", "eu", "fur", "fy", "gu", "ha", "is",
-                "ku",
-                "lb", "ml", "mr", "nah", "ne", "om", "or", "pa", "pap", "ps", "so", "sq", "sw",
-                "ta", "te",
-                "tk", "ur", "zu", "mn", "gsw", "chr", "rm", "pt", "an", "ast"
+                "iw", "it", "nb", "nl", "nn", "no", "sv", "af", "bg", "bn", "ca", "eu", "fur", "fy",
+                "gu", "ha", "is", "ku", "lb", "ml", "mr", "nah", "ne", "om", "or", "pa", "pap",
+                "ps", "so", "sq", "sw", "ta", "te", "tk", "ur", "zu", "mn", "gsw", "chr", "rm",
+                "pt", "an", "ast"
         }, new PluralRules_One());
         addRules(new String[] {
                 "cs", "sk"
@@ -526,7 +524,7 @@ public class LocaleController {
                 }
                 changingConfiguration = true;
                 Locale locale = Gallery.applicationContext.getResources().getConfiguration().locale;
-                if (TextUtils.equals(locale.getLanguage(),"zh")){
+                if (TextUtils.equals(locale.getLanguage(), "zh")) {
                     currentLocale = locale;
                 }
                 Locale.setDefault(currentLocale);

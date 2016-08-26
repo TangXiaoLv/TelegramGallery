@@ -1,6 +1,33 @@
 
 package com.tangxiaolv.telegramgallery;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
+import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
+import com.tangxiaolv.telegramgallery.Components.AspectRatioFrameLayout;
+import com.tangxiaolv.telegramgallery.Components.CheckBox;
+import com.tangxiaolv.telegramgallery.Components.ClippingImageView;
+import com.tangxiaolv.telegramgallery.Components.PhotoCropView;
+import com.tangxiaolv.telegramgallery.Components.PickerBottomLayout;
+import com.tangxiaolv.telegramgallery.Components.SizeNotifierFrameLayoutPhoto;
+import com.tangxiaolv.telegramgallery.TL.Document;
+import com.tangxiaolv.telegramgallery.TL.FileLocation;
+import com.tangxiaolv.telegramgallery.TL.Photo;
+import com.tangxiaolv.telegramgallery.TL.PhotoSize;
+import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
+import com.tangxiaolv.telegramgallery.Utils.FileLoader;
+import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
+import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
+import com.tangxiaolv.telegramgallery.Utils.LocaleController;
+import com.tangxiaolv.telegramgallery.Utils.MediaController;
+import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
+import com.tangxiaolv.telegramgallery.Utils.Utilities;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -38,36 +65,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
-import android.widget.Toast;
-
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenuItem;
-import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
-import com.tangxiaolv.telegramgallery.Components.AspectRatioFrameLayout;
-import com.tangxiaolv.telegramgallery.Components.CheckBox;
-import com.tangxiaolv.telegramgallery.Components.ClippingImageView;
-import com.tangxiaolv.telegramgallery.Components.PhotoCropView;
-import com.tangxiaolv.telegramgallery.Components.PickerBottomLayout;
-import com.tangxiaolv.telegramgallery.Components.SizeNotifierFrameLayoutPhoto;
-import com.tangxiaolv.telegramgallery.TL.Document;
-import com.tangxiaolv.telegramgallery.TL.FileLocation;
-import com.tangxiaolv.telegramgallery.TL.Photo;
-import com.tangxiaolv.telegramgallery.TL.PhotoSize;
-import com.tangxiaolv.telegramgallery.TL.TL_photoEmpty;
-import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
-import com.tangxiaolv.telegramgallery.Utils.FileLoader;
-import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
-import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
-import com.tangxiaolv.telegramgallery.Utils.MediaController;
-import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
-import com.tangxiaolv.telegramgallery.Utils.Utilities;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 @SuppressWarnings("unchecked")
 public class PhotoViewer implements NotificationCenter.NotificationCenterDelegate,
@@ -667,7 +664,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 avatarsArr.clear();
                 for (int a = 0; a < photos.size(); a++) {
                     Photo photo = photos.get(a);
-                    if (photo == null || photo instanceof TL_photoEmpty || photo.sizes == null) {
+                    if (photo == null || photo instanceof Photo.TL_photoEmpty || photo.sizes == null) {
                         continue;
                     }
                     PhotoSize sizeFull = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640);
@@ -692,7 +689,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 if (setToImage != -1) {
                     setImageIndex(setToImage, true);
                 } else {
-                    avatarsArr.add(0, new TL_photoEmpty());
+                    avatarsArr.add(0, new Photo.TL_photoEmpty());
                     imagesArrLocations.add(0, currentFileLocation);
                     imagesArrLocationsSizes.add(0, 0);
                     setImageIndex(0, true);
@@ -743,23 +740,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     return true;
                 }
                 return super.dispatchKeyEventPreIme(event);
-            }
-
-            @Override
-            public ActionMode startActionModeForChild(View originalView,
-                    ActionMode.Callback callback, int type) {
-                if (Build.VERSION.SDK_INT >= 23) {
-                    View view = parentActivity.findViewById(android.R.id.content);
-                    if (view instanceof ViewGroup) {
-                        try {
-                            return ((ViewGroup) view).startActionModeForChild(originalView,
-                                    callback, type);
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                return super.startActionModeForChild(originalView, callback, type);
             }
         };
         windowView.setBackgroundDrawable(backgroundDrawable);
@@ -1421,7 +1401,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             avatarsDialogId = object.dialogId;
             imagesArrLocations.add(fileLocation);
             imagesArrLocationsSizes.add(object.size);
-            avatarsArr.add(new TL_photoEmpty());
+            avatarsArr.add(new Photo.TL_photoEmpty());
             setImageIndex(0, true);
             currentUserAvatarLocation = fileLocation;
         } else if (photos != null) {

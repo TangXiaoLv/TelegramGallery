@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -531,29 +530,6 @@ public class AndroidUtilities {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static File getAlbumDir() {
-        if (Build.VERSION.SDK_INT >= 23 && Gallery.applicationContext.checkSelfPermission(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            return FileLoader.getInstance().getDirectory(FileLoader.MEDIA_DIR_CACHE);
-        }
-        File storageDir = null;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            storageDir = new File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                    "Telegram");
-            if (!storageDir.mkdirs()) {
-                if (!storageDir.exists()) {
-                    Log.d("tmessages", "failed to create directory");
-                    return null;
-                }
-            }
-        } else {
-            Log.d("tmessages", "External storage is not mounted READ/WRITE.");
-        }
-
-        return storageDir;
     }
 
     @SuppressLint("NewApi")

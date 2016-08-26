@@ -58,4 +58,162 @@ public class DocumentAttribute extends TLObject {
         }
         return result;
     }
+
+    public static class TL_documentAttributeAnimated extends DocumentAttribute {
+        public static int constructor = 0x11b58939;
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+        }
+    }
+
+    public static class TL_documentAttributeSticker_old extends TL_documentAttributeSticker {
+        public static int constructor = 0xfb0a5727;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+        }
+    }
+
+    public static class TL_documentAttributeImageSize extends DocumentAttribute {
+        public static int constructor = 0x6c37c15c;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            w = stream.readInt32(exception);
+            h = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(w);
+            stream.writeInt32(h);
+        }
+    }
+
+    public static class TL_documentAttributeAudio_old extends TL_documentAttributeAudio {
+        public static int constructor = 0x51448e5;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            duration = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(duration);
+        }
+    }
+
+    public static class TL_documentAttributeSticker extends DocumentAttribute {
+        public static int constructor = 0x3a556302;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            alt = stream.readString(exception);
+            stickerset = InputStickerSet.TLdeserialize(stream, stream.readInt32(exception),
+                    exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeString(alt);
+            stickerset.serializeToStream(stream);
+        }
+    }
+
+    public static class TL_documentAttributeVideo extends DocumentAttribute {
+        public static int constructor = 0x5910cccb;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            duration = stream.readInt32(exception);
+            w = stream.readInt32(exception);
+            h = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(duration);
+            stream.writeInt32(w);
+            stream.writeInt32(h);
+        }
+    }
+
+    public static class TL_documentAttributeAudio extends DocumentAttribute {
+        public static int constructor = 0x9852f9c6;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            voice = (flags & 1024) != 0;
+            duration = stream.readInt32(exception);
+            if ((flags & 1) != 0) {
+                title = stream.readString(exception);
+            }
+            if ((flags & 2) != 0) {
+                performer = stream.readString(exception);
+            }
+            if ((flags & 4) != 0) {
+                waveform = stream.readByteArray(exception);
+            }
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = voice ? (flags | 1024) : (flags & ~1024);
+            stream.writeInt32(flags);
+            stream.writeInt32(duration);
+            if ((flags & 1) != 0) {
+                stream.writeString(title);
+            }
+            if ((flags & 2) != 0) {
+                stream.writeString(performer);
+            }
+            if ((flags & 4) != 0) {
+                stream.writeByteArray(waveform);
+            }
+        }
+    }
+
+    public static class TL_documentAttributeSticker_old2 extends TL_documentAttributeSticker {
+        public static int constructor = 0x994c9882;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            alt = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeString(alt);
+        }
+    }
+
+    public static class TL_documentAttributeAudio_layer45 extends TL_documentAttributeAudio {
+        public static int constructor = 0xded218e0;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            duration = stream.readInt32(exception);
+            title = stream.readString(exception);
+            performer = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(duration);
+            stream.writeString(title);
+            stream.writeString(performer);
+        }
+    }
+
+    public static class TL_documentAttributeFilename extends DocumentAttribute {
+        public static int constructor = 0x15590068;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            file_name = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeString(file_name);
+        }
+    }
 }

@@ -31,4 +31,52 @@ public class InputFileLocation extends TLObject {
         }
         return result;
     }
+
+    public static class TL_inputEncryptedFileLocation extends InputFileLocation {
+        public static int constructor = 0xf5235d55;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            id = stream.readInt64(exception);
+            access_hash = stream.readInt64(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            stream.writeInt64(access_hash);
+        }
+    }
+
+    public static class TL_inputDocumentFileLocation extends InputFileLocation {
+        public static int constructor = 0x4e45abe9;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            id = stream.readInt64(exception);
+            access_hash = stream.readInt64(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            stream.writeInt64(access_hash);
+        }
+    }
+
+    public static class TL_inputFileLocation extends InputFileLocation {
+        public static int constructor = 0x14637196;
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            volume_id = stream.readInt64(exception);
+            local_id = stream.readInt32(exception);
+            secret = stream.readInt64(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(volume_id);
+            stream.writeInt32(local_id);
+            stream.writeInt64(secret);
+        }
+    }
+
 }

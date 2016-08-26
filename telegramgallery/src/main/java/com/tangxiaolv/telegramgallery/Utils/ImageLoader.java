@@ -24,8 +24,6 @@ import com.tangxiaolv.telegramgallery.TL.Document;
 import com.tangxiaolv.telegramgallery.TL.FileLocation;
 import com.tangxiaolv.telegramgallery.TL.PhotoSize;
 import com.tangxiaolv.telegramgallery.TL.TLObject;
-import com.tangxiaolv.telegramgallery.TL.TL_fileLocation;
-import com.tangxiaolv.telegramgallery.TL.TL_photoSize;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -1995,10 +1993,10 @@ public class ImageLoader {
             scaledBitmap = bitmap;
         }
 
-        TL_fileLocation location = new TL_fileLocation();
+        FileLocation.TL_fileLocation location = new FileLocation.TL_fileLocation();
         location.volume_id = Integer.MIN_VALUE;
         location.dc_id = Integer.MIN_VALUE;
-        PhotoSize size = new TL_photoSize();
+        PhotoSize size = new PhotoSize.TL_photoSize();
         size.location = location;
         size.w = scaledBitmap.getWidth();
         size.h = scaledBitmap.getHeight();

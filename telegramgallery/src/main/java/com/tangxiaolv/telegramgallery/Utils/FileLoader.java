@@ -6,9 +6,6 @@ import com.tangxiaolv.telegramgallery.TL.DocumentAttribute;
 import com.tangxiaolv.telegramgallery.TL.FileLocation;
 import com.tangxiaolv.telegramgallery.TL.PhotoSize;
 import com.tangxiaolv.telegramgallery.TL.TLObject;
-import com.tangxiaolv.telegramgallery.TL.TL_documentAttributeFilename;
-import com.tangxiaolv.telegramgallery.TL.TL_fileLocationUnavailable;
-import com.tangxiaolv.telegramgallery.TL.TL_photoCachedSize;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -392,7 +389,7 @@ public class FileLoader {
                 if (closestObject == null
                         || side > 100 && closestObject.location != null
                                 && closestObject.location.dc_id == Integer.MIN_VALUE
-                        || obj instanceof TL_photoCachedSize
+                        || obj instanceof PhotoSize.TL_photoCachedSize
                         || side > lastSide && lastSide < currentSide) {
                     closestObject = obj;
                     lastSide = currentSide;
@@ -402,7 +399,7 @@ public class FileLoader {
                 if (closestObject == null
                         || side > 100 && closestObject.location != null
                                 && closestObject.location.dc_id == Integer.MIN_VALUE
-                        || obj instanceof TL_photoCachedSize
+                        || obj instanceof PhotoSize.TL_photoCachedSize
                         || currentSide <= side && lastSide < currentSide) {
                     closestObject = obj;
                     lastSide = currentSide;
@@ -428,7 +425,7 @@ public class FileLoader {
             }
             for (int a = 0; a < document.attributes.size(); a++) {
                 DocumentAttribute documentAttribute = document.attributes.get(a);
-                if (documentAttribute instanceof TL_documentAttributeFilename) {
+                if (documentAttribute instanceof DocumentAttribute.TL_documentAttributeFilename) {
                     return documentAttribute.file_name;
                 }
             }
@@ -494,13 +491,13 @@ public class FileLoader {
             }
         } else if (attach instanceof PhotoSize) {
             PhotoSize photo = (PhotoSize) attach;
-            if (photo.location == null || photo.location instanceof TL_fileLocationUnavailable) {
+            if (photo.location == null || photo.location instanceof FileLocation.TL_fileLocationUnavailable) {
                 return "";
             }
             return photo.location.volume_id + "_" + photo.location.local_id + "."
                     + (ext != null ? ext : "jpg");
         } else if (attach instanceof FileLocation) {
-            if (attach instanceof TL_fileLocationUnavailable) {
+            if (attach instanceof FileLocation.TL_fileLocationUnavailable) {
                 return "";
             }
             FileLocation location = (FileLocation) attach;

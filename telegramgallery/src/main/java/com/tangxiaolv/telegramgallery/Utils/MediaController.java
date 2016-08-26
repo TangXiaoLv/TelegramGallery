@@ -1,10 +1,9 @@
+
 package com.tangxiaolv.telegramgallery.Utils;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -99,7 +98,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
         }
     }
 
-    public static class PhotoEntry{
+    public static class PhotoEntry {
         public int sortindex;
         public int bucketId;
         public int imageId;
@@ -552,68 +551,64 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
 
                 Cursor cursor = null;
                 try {
-                    if (Build.VERSION.SDK_INT < 23 || Build.VERSION.SDK_INT >= 23
-                            && Gallery.applicationContext.checkSelfPermission(
-                                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        cursor = MediaStore.Images.Media.query(
-                                Gallery.applicationContext.getContentResolver(),
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projectionPhotos,
-                                null, null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
-                        if (cursor != null) {
-                            int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-                            int bucketIdColumn = cursor
-                                    .getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
-                            int bucketNameColumn = cursor
-                                    .getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-                            int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                            int dateColumn = cursor
-                                    .getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
-                            int orientationColumn = cursor
-                                    .getColumnIndex(MediaStore.Images.Media.ORIENTATION);
+                    cursor = MediaStore.Images.Media.query(
+                            Gallery.applicationContext.getContentResolver(),
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projectionPhotos,
+                            null, null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
+                    if (cursor != null) {
+                        int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                        int bucketIdColumn = cursor
+                                .getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+                        int bucketNameColumn = cursor
+                                .getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+                        int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                        int dateColumn = cursor
+                                .getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
+                        int orientationColumn = cursor
+                                .getColumnIndex(MediaStore.Images.Media.ORIENTATION);
 
-                            while (cursor.moveToNext()) {
-                                int imageId = cursor.getInt(imageIdColumn);
-                                int bucketId = cursor.getInt(bucketIdColumn);
-                                String bucketName = cursor.getString(bucketNameColumn);
-                                String path = cursor.getString(dataColumn);
-                                long dateTaken = cursor.getLong(dateColumn);
-                                int orientation = cursor.getInt(orientationColumn);
+                        while (cursor.moveToNext()) {
+                            int imageId = cursor.getInt(imageIdColumn);
+                            int bucketId = cursor.getInt(bucketIdColumn);
+                            String bucketName = cursor.getString(bucketNameColumn);
+                            String path = cursor.getString(dataColumn);
+                            long dateTaken = cursor.getLong(dateColumn);
+                            int orientation = cursor.getInt(orientationColumn);
 
-                                if (path == null || path.length() == 0) {
-                                    continue;
-                                }
+                            if (path == null || path.length() == 0) {
+                                continue;
+                            }
 
-                                PhotoEntry photoEntry = new PhotoEntry(bucketId, imageId, dateTaken,
-                                        path, orientation, false);
+                            PhotoEntry photoEntry = new PhotoEntry(bucketId, imageId, dateTaken,
+                                    path, orientation, false);
 
-                                if (allPhotosAlbum == null) {
-                                    allPhotosAlbum = new AlbumEntry(0, LocaleController.getString(
-                                            "AllPhotos", R.string.AllPhotos), photoEntry, false);
-                                    albumsSorted.add(0, allPhotosAlbum);
-                                }
-                                if (allPhotosAlbum != null) {
-                                    allPhotosAlbum.addPhoto(photoEntry);
-                                }
+                            if (allPhotosAlbum == null) {
+                                allPhotosAlbum = new AlbumEntry(0, LocaleController.getString(
+                                        "AllPhotos", R.string.AllPhotos), photoEntry, false);
+                                albumsSorted.add(0, allPhotosAlbum);
+                            }
+                            if (allPhotosAlbum != null) {
+                                allPhotosAlbum.addPhoto(photoEntry);
+                            }
 
-                                AlbumEntry albumEntry = albums.get(bucketId);
-                                if (albumEntry == null) {
-                                    albumEntry = new AlbumEntry(bucketId, bucketName, photoEntry,
-                                            false);
-                                    albums.put(bucketId, albumEntry);
-                                    if (cameraAlbumId == null && path.startsWith(cameraFolder)) {
-                                        if (albumsSorted.size() >= 2){
-                                            albumsSorted.add(1,albumEntry);
-                                        }else{
-                                            albumsSorted.add(albumEntry);
-                                        }
-                                        cameraAlbumId = bucketId;
+                            AlbumEntry albumEntry = albums.get(bucketId);
+                            if (albumEntry == null) {
+                                albumEntry = new AlbumEntry(bucketId, bucketName, photoEntry,
+                                        false);
+                                albums.put(bucketId, albumEntry);
+                                if (cameraAlbumId == null && path.startsWith(cameraFolder)) {
+                                    if (albumsSorted.size() >= 2) {
+                                        albumsSorted.add(1, albumEntry);
                                     } else {
                                         albumsSorted.add(albumEntry);
                                     }
+                                    cameraAlbumId = bucketId;
+                                } else {
+                                    albumsSorted.add(albumEntry);
                                 }
-
-                                albumEntry.addPhoto(photoEntry);
                             }
+
+                            albumEntry.addPhoto(photoEntry);
                         }
                     }
                 } catch (Throwable e) {
@@ -629,64 +624,60 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 }
 
                 try {
-                    if (Build.VERSION.SDK_INT < 23 || Build.VERSION.SDK_INT >= 23
-                            && Gallery.applicationContext.checkSelfPermission(
-                                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        albums.clear();
-                        AlbumEntry allVideosAlbum = null;
-                        cursor = MediaStore.Images.Media.query(
-                                Gallery.applicationContext.getContentResolver(),
-                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
-                                null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
-                        if (cursor != null) {
-                            int imageIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID);
-                            int bucketIdColumn = cursor
-                                    .getColumnIndex(MediaStore.Video.Media.BUCKET_ID);
-                            int bucketNameColumn = cursor
-                                    .getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
-                            int dataColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATA);
-                            int dateColumn = cursor
-                                    .getColumnIndex(MediaStore.Video.Media.DATE_TAKEN);
+                    albums.clear();
+                    AlbumEntry allVideosAlbum = null;
+                    cursor = MediaStore.Images.Media.query(
+                            Gallery.applicationContext.getContentResolver(),
+                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
+                            null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
+                    if (cursor != null) {
+                        int imageIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID);
+                        int bucketIdColumn = cursor
+                                .getColumnIndex(MediaStore.Video.Media.BUCKET_ID);
+                        int bucketNameColumn = cursor
+                                .getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
+                        int dataColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATA);
+                        int dateColumn = cursor
+                                .getColumnIndex(MediaStore.Video.Media.DATE_TAKEN);
 
-                            while (cursor.moveToNext()) {
-                                int imageId = cursor.getInt(imageIdColumn);
-                                int bucketId = cursor.getInt(bucketIdColumn);
-                                String bucketName = cursor.getString(bucketNameColumn);
-                                String path = cursor.getString(dataColumn);
-                                long dateTaken = cursor.getLong(dateColumn);
+                        while (cursor.moveToNext()) {
+                            int imageId = cursor.getInt(imageIdColumn);
+                            int bucketId = cursor.getInt(bucketIdColumn);
+                            String bucketName = cursor.getString(bucketNameColumn);
+                            String path = cursor.getString(dataColumn);
+                            long dateTaken = cursor.getLong(dateColumn);
 
-                                if (path == null || path.length() == 0) {
-                                    continue;
-                                }
-
-                                PhotoEntry photoEntry = new PhotoEntry(bucketId, imageId, dateTaken,
-                                        path, 0, true);
-
-                                if (allVideosAlbum == null) {
-                                    allVideosAlbum = new AlbumEntry(0, LocaleController.getString(
-                                            "AllVideo", R.string.AllVideo), photoEntry, true);
-                                    videoAlbumsSorted.add(0, allVideosAlbum);
-                                }
-                                if (allVideosAlbum != null) {
-                                    allVideosAlbum.addPhoto(photoEntry);
-                                }
-
-                                AlbumEntry albumEntry = albums.get(bucketId);
-                                if (albumEntry == null) {
-                                    albumEntry = new AlbumEntry(bucketId, bucketName, photoEntry,
-                                            true);
-                                    albums.put(bucketId, albumEntry);
-                                    if (cameraAlbumVideoId == null && cameraFolder != null
-                                            && path != null && path.startsWith(cameraFolder)) {
-                                        videoAlbumsSorted.add(0, albumEntry);
-                                        cameraAlbumVideoId = bucketId;
-                                    } else {
-                                        videoAlbumsSorted.add(albumEntry);
-                                    }
-                                }
-
-                                albumEntry.addPhoto(photoEntry);
+                            if (path == null || path.length() == 0) {
+                                continue;
                             }
+
+                            PhotoEntry photoEntry = new PhotoEntry(bucketId, imageId, dateTaken,
+                                    path, 0, true);
+
+                            if (allVideosAlbum == null) {
+                                allVideosAlbum = new AlbumEntry(0, LocaleController.getString(
+                                        "AllVideo", R.string.AllVideo), photoEntry, true);
+                                videoAlbumsSorted.add(0, allVideosAlbum);
+                            }
+                            if (allVideosAlbum != null) {
+                                allVideosAlbum.addPhoto(photoEntry);
+                            }
+
+                            AlbumEntry albumEntry = albums.get(bucketId);
+                            if (albumEntry == null) {
+                                albumEntry = new AlbumEntry(bucketId, bucketName, photoEntry,
+                                        true);
+                                albums.put(bucketId, albumEntry);
+                                if (cameraAlbumVideoId == null && cameraFolder != null
+                                        && path != null && path.startsWith(cameraFolder)) {
+                                    videoAlbumsSorted.add(0, albumEntry);
+                                    cameraAlbumVideoId = bucketId;
+                                } else {
+                                    videoAlbumsSorted.add(albumEntry);
+                                }
+                            }
+
+                            albumEntry.addPhoto(photoEntry);
                         }
                     }
                 } catch (Throwable e) {
