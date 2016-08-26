@@ -89,14 +89,12 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         loading = true;
         MediaController.loadGalleryPhotosAlbums(classGuid);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.albumsDidLoaded);
-        NotificationCenter.getInstance().addObserver(this, NotificationCenter.closeChats);
         return super.onFragmentCreate();
     }
 
     @Override
     public void onFragmentDestroy() {
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.albumsDidLoaded);
-        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.closeChats);
         super.onFragmentDestroy();
     }
 

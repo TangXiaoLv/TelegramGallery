@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ImageView view = new ImageView(MainActivity.this);
-                view.setScaleType(ImageView.ScaleType.FIT_XY);
-                view.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                view.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         256));
                 String path = (String) getItem(position);
                 BitmapFactory.Options opts = new BitmapFactory.Options();
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GalleryActivity.openActivity(MainActivity.this, false, 3, 12);
+                GalleryActivity.openActivity(MainActivity.this, false, 9, 12);
             }
         });
 

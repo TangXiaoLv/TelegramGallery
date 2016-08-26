@@ -664,7 +664,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 avatarsArr.clear();
                 for (int a = 0; a < photos.size(); a++) {
                     Photo photo = photos.get(a);
-                    if (photo == null || photo instanceof Photo.TL_photoEmpty || photo.sizes == null) {
+                    if (photo == null || photo instanceof Photo.TL_photoEmpty
+                            || photo.sizes == null) {
                         continue;
                     }
                     PhotoSize sizeFull = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640);
@@ -2209,6 +2210,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         } catch (Exception e) {
             e.printStackTrace();
         }
+        parentActivity = null;
         Instance = null;
     }
 

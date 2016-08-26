@@ -28,6 +28,7 @@ public class GalleryActivity extends Activity
 
     private ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
     private ActionBarLayout actionBarLayout;
+    private PhotoAlbumPickerActivity albumPickerActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +46,10 @@ public class GalleryActivity extends Activity
         boolean singlePhoto = intent.getBooleanExtra(SINGLE_PHOTO, false);
         boolean hasCamera = intent.getBooleanExtra(HAS_CAMERA, false);
         int limitPickPhoto = intent.getIntExtra(LIMIT_PICK_PHOTO, 9);
-        PhotoAlbumPickerActivity pickerActivity = new PhotoAlbumPickerActivity(limitPickPhoto,
+        albumPickerActivity = new PhotoAlbumPickerActivity(limitPickPhoto,
                 singlePhoto, false);
-        pickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
-        actionBarLayout.presentFragment(pickerActivity, false, true, true);
+        albumPickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
+        actionBarLayout.presentFragment(albumPickerActivity, false, true, true);
     }
 
     private PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate mPhotoAlbumPickerActivityDelegate = new PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate() {
@@ -149,9 +150,12 @@ public class GalleryActivity extends Activity
     @Override
     protected void onDestroy() {
         PhotoViewer.getInstance().destroyPhotoViewer();
+        albumPickerActivity.removeSelfFromStack();
+        actionBarLayout.clear();
         mainFragmentsStack.clear();
         mainFragmentsStack = null;
         actionBarLayout = null;
+        albumPickerActivity = null;
         super.onDestroy();
     }
 

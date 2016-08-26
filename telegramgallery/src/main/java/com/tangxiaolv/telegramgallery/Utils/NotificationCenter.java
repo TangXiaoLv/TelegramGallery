@@ -44,9 +44,8 @@ public class NotificationCenter {
     private ArrayList<DelayedPost> delayedPosts = new ArrayList<>(10);
 
     private int broadcasting = 0;
-    private boolean animationInProgress;
-
     private int[] allowedNotifications;
+    private boolean animationInProgress;
 
     public interface NotificationCenterDelegate {
         void didReceivedNotification(int id, Object... args);

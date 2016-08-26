@@ -23,6 +23,9 @@
 
 
     <GridView
+        android:layout_marginTop="8dp"
+        android:horizontalSpacing="4dp"
+        android:verticalSpacing="4dp"
         android:id="@+id/gv"
         android:layout_width="match_parent"
         android:numColumns="3"
