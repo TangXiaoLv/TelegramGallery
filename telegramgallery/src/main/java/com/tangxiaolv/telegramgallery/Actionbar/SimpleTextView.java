@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
-import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -23,7 +22,6 @@ public class SimpleTextView extends View implements Drawable.Callback {
     private TextPaint textPaint;
     private int gravity = Gravity.LEFT | Gravity.TOP;
     private CharSequence text;
-    private SpannableStringBuilder spannableStringBuilder;
     private Drawable leftDrawable;
     private Drawable rightDrawable;
     private int drawablePadding = AndroidUtilities.dp(4);

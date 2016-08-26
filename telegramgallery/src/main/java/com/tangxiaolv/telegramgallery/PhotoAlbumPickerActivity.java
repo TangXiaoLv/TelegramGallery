@@ -301,8 +301,6 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         private MediaController.PhotoEntry[] selectArr;
         private MediaController.PhotoEntry[] removedArr;
 
-        private int currentIndex = 1;
-
         public CustomProvider(List<Object> selectPhotos) {
             int size = selectPhotos.size();
             selectArr = new MediaController.PhotoEntry[size];
@@ -347,24 +345,24 @@ public class PhotoAlbumPickerActivity extends BaseFragment
 
         @Override
         public int getCheckeCorner(int index) {
-            return currentIndex = index + 1;
+            return index + 1;
         }
 
         @Override
         public void selectChanged(int index, boolean checked) {
-            int imageId;
+            MediaController.PhotoEntry photoEntry;
             if (checked) {
                 selectArr[index] = removedArr[index];
-                imageId = removedArr[index].imageId;
+                photoEntry = removedArr[index];
                 System.arraycopy(removedArr, index, selectArr, index, 1);
                 removedArr[index] = null;
             } else {
                 removedArr[index] = selectArr[index];
-                imageId = selectArr[index].imageId;
+                photoEntry = selectArr[index];
                 System.arraycopy(selectArr, index, removedArr, index, 1);
                 selectArr[index] = null;
             }
-            currentPhotoPickerActivity.setPhotoCheckedByImageId(imageId);
+            currentPhotoPickerActivity.setPhotoCheckedByImageId(photoEntry);
         }
 
         @Override

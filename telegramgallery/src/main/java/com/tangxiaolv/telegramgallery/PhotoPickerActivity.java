@@ -68,8 +68,6 @@ public class PhotoPickerActivity extends BaseFragment
     private ArrayList<MediaController.SearchImage> recentImages;
 
     private ArrayList<MediaController.SearchImage> searchResult = new ArrayList<>();
-    private HashMap<String, MediaController.SearchImage> searchResultKeys = new HashMap<>();
-    private HashMap<String, MediaController.SearchImage> searchResultUrls = new HashMap<>();
 
     private boolean searching;
     private String nextSearchBingString;
@@ -591,7 +589,6 @@ public class PhotoPickerActivity extends BaseFragment
                 photoEntry.sortindex = cornerIndex;
                 delegate.putCheckboxTag(photoEntry.imageId, cornerIndex);
             }
-
         }
 
         if (selectedPhotos.size() <= limitPickPhoto) {
@@ -610,7 +607,8 @@ public class PhotoPickerActivity extends BaseFragment
         }
     }
 
-    public void setPhotoCheckedByImageId(int imageId) {
+    public void setPhotoCheckedByImageId(MediaController.PhotoEntry changedEntry) {
+        int imageId = changedEntry.imageId;
         if (selectedAlbum != null) {
             int size = selectedAlbum.photos.size();
             int index = -1;
@@ -623,6 +621,19 @@ public class PhotoPickerActivity extends BaseFragment
 
             if (index != -1) {
                 setPhotoChecked(index);
+            }else{
+                MediaController.PhotoEntry existEntry = selectedPhotos.get(imageId);
+                if (existEntry != null) {
+                    existEntry.sortindex = -1;
+                    selectedPhotos.remove(existEntry.imageId);
+                    delegate.removeCheckboxTag(imageId);
+                } else {
+                    selectedPhotos.put(imageId, changedEntry);
+                    int cornerIndex = delegate.generateCheckCorner();
+                    changedEntry.sortindex = cornerIndex;
+                    delegate.putCheckboxTag(imageId, cornerIndex);
+                }
+                pickerBottomLayout.updateSelectedCount(selectedPhotos.size(), true);
             }
         }
     }
