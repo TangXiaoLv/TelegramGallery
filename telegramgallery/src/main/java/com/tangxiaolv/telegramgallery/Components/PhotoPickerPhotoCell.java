@@ -1,3 +1,4 @@
+
 package com.tangxiaolv.telegramgallery.Components;
 
 import android.animation.Animator;
@@ -7,10 +8,12 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 
-import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
 import com.tangxiaolv.telegramgallery.AnimatorListenerAdapterProxy;
-import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
 import com.tangxiaolv.telegramgallery.R;
+import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
+import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
+
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.DarkTheme;
 
 public class PhotoPickerPhotoCell extends FrameLayout {
 
@@ -31,12 +34,12 @@ public class PhotoPickerPhotoCell extends FrameLayout {
         addView(checkFrame, LayoutHelper.createFrame(42, 42, Gravity.RIGHT | Gravity.TOP));
 
         checkBox = new CheckBox(context, R.drawable.checkbig);
-        checkBox.setSize(30);
+        checkBox.setSize(24);
         checkBox.setCheckOffset(AndroidUtilities.dp(1));
         checkBox.setDrawBackground(true);
-        checkBox.setColor(0xff3ccaef);
+        checkBox.setColor(0xff007aff);
         addView(checkBox,
-                LayoutHelper.createFrame(30, 30, Gravity.RIGHT | Gravity.TOP, 0, 4, 4, 0));
+                LayoutHelper.createFrame(24, 24, Gravity.RIGHT | Gravity.TOP, 0, 4, 4, 0));
     }
 
     @Override
@@ -53,7 +56,7 @@ public class PhotoPickerPhotoCell extends FrameLayout {
         }
         if (animated) {
             if (checked) {
-                setBackgroundColor(0xff0A0A0A);
+                setBackgroundColor(DarkTheme ? 0xff0A0A0A : 0xffffffff);
             }
             animator = new AnimatorSet();
             animator.playTogether(
@@ -80,7 +83,7 @@ public class PhotoPickerPhotoCell extends FrameLayout {
             });
             animator.start();
         } else {
-            setBackgroundColor(checked ? 0xff0A0A0A : 0);
+            setBackgroundColor(checked ? DarkTheme ? 0xff0A0A0A : 0xffffffff : 0);
             photoImage.setScaleX(checked ? 0.85f : 1.0f);
             photoImage.setScaleY(checked ? 0.85f : 1.0f);
         }
@@ -94,7 +97,7 @@ public class PhotoPickerPhotoCell extends FrameLayout {
         }
         if (animated) {
             if (checked) {
-                setBackgroundColor(0xff0A0A0A);
+                setBackgroundColor(DarkTheme ? 0xff0A0A0A : 0xffffffff);
             }
             animator = new AnimatorSet();
             animator.playTogether(
@@ -121,7 +124,7 @@ public class PhotoPickerPhotoCell extends FrameLayout {
             });
             animator.start();
         } else {
-            setBackgroundColor(checked ? 0xff0A0A0A : 0);
+            setBackgroundColor(checked ? DarkTheme ? 0xff0A0A0A : 0xffffffff : 0);
             photoImage.setScaleX(checked ? 0.85f : 1.0f);
             photoImage.setScaleY(checked ? 0.85f : 1.0f);
         }

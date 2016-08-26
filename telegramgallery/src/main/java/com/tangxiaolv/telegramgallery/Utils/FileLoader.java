@@ -4,8 +4,6 @@ import com.tangxiaolv.telegramgallery.DispatchQueue;
 import com.tangxiaolv.telegramgallery.TL.Document;
 import com.tangxiaolv.telegramgallery.TL.DocumentAttribute;
 import com.tangxiaolv.telegramgallery.TL.FileLocation;
-import com.tangxiaolv.telegramgallery.TL.InputEncryptedFile;
-import com.tangxiaolv.telegramgallery.TL.InputFile;
 import com.tangxiaolv.telegramgallery.TL.PhotoSize;
 import com.tangxiaolv.telegramgallery.TL.TLObject;
 import com.tangxiaolv.telegramgallery.TL.TL_documentAttributeFilename;
@@ -22,13 +20,6 @@ import java.util.concurrent.Semaphore;
 public class FileLoader {
 
     public interface FileLoaderDelegate {
-        void fileUploadProgressChanged(String location, float progress, boolean isEncrypted);
-
-        void fileDidUploaded(String location, InputFile inputFile,
-                InputEncryptedFile inputEncryptedFile, byte[] key, byte[] iv, long totalFileSize);
-
-        void fileDidFailedUpload(String location, boolean isEncrypted);
-
         void fileDidLoaded(String location, File finalFile, int type);
 
         void fileDidFailedLoad(String location, int state);

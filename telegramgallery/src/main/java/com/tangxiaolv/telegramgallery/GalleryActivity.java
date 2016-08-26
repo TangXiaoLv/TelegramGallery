@@ -9,7 +9,6 @@ import android.widget.FrameLayout;
 
 import com.tangxiaolv.telegramgallery.Actionbar.ActionBarLayout;
 import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
-import com.tangxiaolv.telegramgallery.Utils.MediaController;
 
 import java.util.ArrayList;
 
@@ -54,8 +53,7 @@ public class GalleryActivity extends Activity
 
     private PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate mPhotoAlbumPickerActivityDelegate = new PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate() {
         @Override
-        public void didSelectPhotos(ArrayList<String> photos, ArrayList<String> captions,
-                ArrayList<MediaController.SearchImage> webPhotos) {
+        public void didSelectPhotos(ArrayList<String> photos, ArrayList<String> captions) {
             Intent intent = new Intent();
             intent.putExtra(PHOTOS, photos);
             setResult(Activity.RESULT_OK, intent);

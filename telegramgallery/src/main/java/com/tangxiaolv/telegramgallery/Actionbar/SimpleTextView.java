@@ -1,8 +1,10 @@
+
 package com.tangxiaolv.telegramgallery.Actionbar;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
@@ -32,10 +34,12 @@ public class SimpleTextView extends View implements Drawable.Callback {
     private int textWidth;
     private int textHeight;
     private boolean wasLayout;
+    private final Point screenSize;
 
     public SimpleTextView(Context context) {
         super(context);
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        screenSize = AndroidUtilities.getRealScreenSize();
     }
 
     public void setTextColor(int color) {
@@ -95,11 +99,14 @@ public class SimpleTextView extends View implements Drawable.Callback {
                     width -= drawablePadding;
                 }
                 width -= getPaddingLeft() + getPaddingRight();
-                CharSequence string = TextUtils.ellipsize(text, textPaint, width, TextUtils.TruncateAt.END);
+                CharSequence string = TextUtils.ellipsize(text, textPaint, width,
+                        TextUtils.TruncateAt.END);
                 if (layout != null && TextUtils.equals(layout.getText(), string)) {
                     return false;
                 }
-                layout = new StaticLayout(string, 0, string.length(), textPaint, width + AndroidUtilities.dp(8), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+                layout = new StaticLayout(string, 0, string.length(), textPaint,
+                        width + AndroidUtilities.dp(8), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f,
+                        false);
 
                 if (layout.getLineCount() > 0) {
                     textWidth = (int) Math.ceil(layout.getLineWidth(0));
@@ -113,7 +120,7 @@ public class SimpleTextView extends View implements Drawable.Callback {
                     }
                 }
             } catch (Exception e) {
-                //ignore
+                // ignore
             }
         } else {
             layout = null;
@@ -239,7 +246,8 @@ public class SimpleTextView extends View implements Drawable.Callback {
         int textOffsetX = 0;
         if (leftDrawable != null) {
             int y = (textHeight - leftDrawable.getIntrinsicHeight()) / 2 + leftDrawableTopPadding;
-            leftDrawable.setBounds(0, y, leftDrawable.getIntrinsicWidth(), y + leftDrawable.getIntrinsicHeight());
+            leftDrawable.setBounds(0, y, leftDrawable.getIntrinsicWidth(),
+                    y + leftDrawable.getIntrinsicHeight());
             leftDrawable.draw(canvas);
             if ((gravity & Gravity.HORIZONTAL_GRAVITY_MASK) == Gravity.LEFT) {
                 textOffsetX += drawablePadding + leftDrawable.getIntrinsicWidth();
@@ -251,8 +259,13 @@ public class SimpleTextView extends View implements Drawable.Callback {
                 x += drawablePadding + leftDrawable.getIntrinsicWidth();
             }
             int y = (textHeight - rightDrawable.getIntrinsicHeight()) / 2 + rightDrawableTopPadding;
-            rightDrawable.setBounds(x, y, x + rightDrawable.getIntrinsicWidth(), y + rightDrawable.getIntrinsicHeight());
+            rightDrawable.setBounds(x, y, x + rightDrawable.getIntrinsicWidth(),
+                    y + rightDrawable.getIntrinsicHeight());
             rightDrawable.draw(canvas);
+        }
+
+        if ((gravity & Gravity.CENTER) == Gravity.CENTER){
+            textOffsetX = screenSize.x / 2 - getLeft() - textWidth / 2;
         }
         if (layout != null) {
             if (offsetX + textOffsetX != 0) {

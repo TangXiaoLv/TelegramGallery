@@ -1,3 +1,4 @@
+
 package com.tangxiaolv.telegramgallery.Utils;
 
 import android.annotation.SuppressLint;
@@ -30,6 +31,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.EdgeEffect;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.tangxiaolv.telegramgallery.Gallery;
 import com.tangxiaolv.telegramgallery.R;
@@ -53,8 +55,10 @@ public class AndroidUtilities {
     public static int leftBaseline;
     public static boolean usingHardwareInput;
     private static Boolean isTablet = null;
+    private static Toast toast;
 
     public static Pattern WEB_URL = null;
+
     static {
         try {
             final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
@@ -107,6 +111,15 @@ public class AndroidUtilities {
             }
             return typefaceCache.get(assetPath);
         }
+    }
+
+    public static void showToast(String text){
+        if (toast == null){
+            toast = Toast.makeText(Gallery.applicationContext,text,Toast.LENGTH_SHORT);
+        }else{
+            toast.setText(text);
+        }
+        toast.show();
     }
 
     public static void showKeyboard(View view) {

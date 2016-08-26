@@ -16,9 +16,9 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -39,6 +39,8 @@ import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.DarkTheme;
 
 public class PhotoPickerActivity extends BaseFragment
         implements NotificationCenter.NotificationCenterDelegate, PhotoViewer.PhotoViewerProvider {
@@ -62,7 +64,6 @@ public class PhotoPickerActivity extends BaseFragment
     }
 
     private int type;
-    private HashMap<String, MediaController.SearchImage> selectedWebPhotos;
     private HashMap<Integer, MediaController.PhotoEntry> selectedPhotos;
     private ArrayList<MediaController.SearchImage> recentImages;
 
@@ -97,13 +98,11 @@ public class PhotoPickerActivity extends BaseFragment
     public PhotoPickerActivity(int type, int limitPickPhoto,
             MediaController.AlbumEntry selectedAlbum,
             HashMap<Integer, MediaController.PhotoEntry> selectedPhotos,
-            HashMap<String, MediaController.SearchImage> selectedWebPhotos,
             ArrayList<MediaController.SearchImage> recentImages, boolean onlyOnePhoto) {
         super();
         this.limitPickPhoto = limitPickPhoto;
         this.selectedAlbum = selectedAlbum;
         this.selectedPhotos = selectedPhotos;
-        this.selectedWebPhotos = selectedWebPhotos;
         this.type = type;
         this.recentImages = recentImages;
         this.singlePhoto = onlyOnePhoto;
@@ -128,15 +127,11 @@ public class PhotoPickerActivity extends BaseFragment
         actionBar.setBackgroundColor(Theme.ACTION_BAR_MEDIA_PICKER_COLOR);
         actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_PICKER_SELECTOR_COLOR);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        // actionBar.setBackText("返回");
         if (selectedAlbum != null) {
             actionBar.setTitle(selectedAlbum.bucketName);
-        } else if (type == 0) {
-            actionBar.setTitle(
-                    LocaleController.getString("SearchImagesTitle", R.string.SearchImagesTitle));
-        } else if (type == 1) {
-            actionBar.setTitle(
-                    LocaleController.getString("SearchGifsTitle", R.string.SearchGifsTitle));
         }
+
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -146,69 +141,24 @@ public class PhotoPickerActivity extends BaseFragment
             }
         });
 
-        if (selectedAlbum == null) {
-            ActionBarMenu menu = actionBar.createMenu();
-            searchItem = menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true)
-                    .setActionBarMenuItemSearchListener(
-                            new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
-                                @Override
-                                public void onSearchExpand() {
+        ActionBarMenu menu = actionBar.createMenu();
 
-                                }
-
-                                @Override
-                                public boolean canCollapseSearch() {
-                                    finishFragment();
-                                    return false;
-                                }
-
-                                @Override
-                                public void onTextChanged(EditText editText) {
-                                    if (editText.getText().length() == 0) {
-                                        searchResult.clear();
-                                        searchResultKeys.clear();
-                                        lastSearchString = null;
-                                        nextSearchBingString = null;
-                                        giphySearchEndReached = true;
-                                        searching = false;
-                                        if (type == 0) {
-                                            emptyView.setText(LocaleController.getString(
-                                                    "NoRecentPhotos", R.string.NoRecentPhotos));
-                                        } else if (type == 1) {
-                                            emptyView.setText(LocaleController.getString(
-                                                    "NoRecentGIFs", R.string.NoRecentGIFs));
-                                        }
-                                        updateSearchInterface();
-                                    }
-                                }
-
-                                @Override
-                                public void onSearchPressed(EditText editText) {
-                                    if (editText.getText().toString().length() == 0) {
-                                        return;
-                                    }
-                                    searchResult.clear();
-                                    searchResultKeys.clear();
-                                    nextSearchBingString = null;
-                                    giphySearchEndReached = true;
-                                    lastSearchString = editText.getText().toString();
-                                    if (lastSearchString.length() == 0) {
-                                        lastSearchString = null;
-                                        if (type == 0) {
-                                            emptyView.setText(LocaleController.getString(
-                                                    "NoRecentPhotos", R.string.NoRecentPhotos));
-                                        } else if (type == 1) {
-                                            emptyView.setText(LocaleController.getString(
-                                                    "NoRecentGIFs", R.string.NoRecentGIFs));
-                                        }
-                                    } else {
-                                        emptyView.setText(LocaleController.getString("NoResult",
-                                                R.string.NoResult));
-                                    }
-                                    updateSearchInterface();
-                                }
-                            });
-        }
+        TextView cancel = new TextView(context);
+        LinearLayout.LayoutParams cancelParams = LayoutHelper.createLinear(48, -1);
+        cancel.setTextSize(18);
+        cancel.setText(LocaleController.getString("Cancel", R.string.Cancel));
+        cancel.setTextColor(0xffffffff);
+        cancel.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        cancelParams.setMargins(0, 0, AndroidUtilities.dp(8), 0);
+        cancel.setLayoutParams(cancelParams);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishFragment();
+                delegate.actionButtonPressed(true);
+            }
+        });
+        menu.addView(cancel);
 
         if (selectedAlbum == null) {
             if (type == 0) {
@@ -223,7 +173,8 @@ public class PhotoPickerActivity extends BaseFragment
         fragmentView = new FrameLayout(context);
 
         FrameLayout frameLayout = (FrameLayout) fragmentView;
-        frameLayout.setBackgroundColor(0xff000000);
+        frameLayout
+                .setBackgroundColor(DarkTheme ? 0xff000000 : 0xffffffff);
 
         listView = new GridView(context);
         listView.setPadding(AndroidUtilities.dp(4), AndroidUtilities.dp(4), AndroidUtilities.dp(4),
@@ -274,7 +225,8 @@ public class PhotoPickerActivity extends BaseFragment
                         AndroidUtilities.hideKeyboard(searchItem.getSearchField());
                     }
                     PhotoViewer.getInstance().setParentActivity(getParentActivity());
-                    PhotoViewer.getInstance().openPhotoForSelect(arrayList, i, singlePhoto ? 1 : 0,
+                    PhotoViewer.getInstance().openPhotoForSelect(arrayList, false, i,
+                            singlePhoto ? 1 : 0,
                             PhotoPickerActivity.this);
                 }
             }
@@ -379,7 +331,7 @@ public class PhotoPickerActivity extends BaseFragment
             updateSearchInterface();
         }
 
-        pickerBottomLayout = new PickerBottomLayout(context);
+        pickerBottomLayout = new PickerBottomLayout(context, DarkTheme);
         frameLayout.addView(pickerBottomLayout);
         layoutParams = (FrameLayout.LayoutParams) pickerBottomLayout.getLayoutParams();
         layoutParams.width = LayoutHelper.MATCH_PARENT;
@@ -403,8 +355,7 @@ public class PhotoPickerActivity extends BaseFragment
         }
 
         listView.setEmptyView(emptyView);
-        pickerBottomLayout.updateSelectedCount(selectedPhotos.size() + selectedWebPhotos.size(),
-                true);
+        pickerBottomLayout.updateSelectedCount(selectedPhotos.size(), true);
 
         return fragmentView;
     }
@@ -553,11 +504,6 @@ public class PhotoPickerActivity extends BaseFragment
     }
 
     @Override
-    public boolean isPreview() {
-        return false;
-    }
-
-    @Override
     public void openPreview() {
         delegate.openPreview();
     }
@@ -620,16 +566,8 @@ public class PhotoPickerActivity extends BaseFragment
         if (selectedAlbum != null) {
             return !(index < 0 || index >= selectedAlbum.photos.size())
                     && selectedPhotos.containsKey(selectedAlbum.photos.get(index).imageId);
-        } else {
-            ArrayList<MediaController.SearchImage> array;
-            if (searchResult.isEmpty() && lastSearchString == null) {
-                array = recentImages;
-            } else {
-                array = searchResult;
-            }
-            return !(index < 0 || index >= array.size())
-                    && selectedWebPhotos.containsKey(array.get(index).id);
         }
+        return false;
     }
 
     @Override
@@ -654,24 +592,6 @@ public class PhotoPickerActivity extends BaseFragment
                 delegate.putCheckboxTag(photoEntry.imageId, cornerIndex);
             }
 
-        } else {
-            MediaController.SearchImage photoEntry;
-            ArrayList<MediaController.SearchImage> array;
-            if (searchResult.isEmpty() && lastSearchString == null) {
-                array = recentImages;
-            } else {
-                array = searchResult;
-            }
-            if (index < 0 || index >= array.size()) {
-                return;
-            }
-            photoEntry = array.get(index);
-            if (selectedWebPhotos.containsKey(photoEntry.id)) {
-                selectedWebPhotos.remove(photoEntry.id);
-                add = false;
-            } else {
-                selectedWebPhotos.put(photoEntry.id, photoEntry);
-            }
         }
 
         if (selectedPhotos.size() <= limitPickPhoto) {
@@ -685,9 +605,25 @@ public class PhotoPickerActivity extends BaseFragment
                     break;
                 }
             }
-            pickerBottomLayout.updateSelectedCount(selectedPhotos.size() + selectedWebPhotos.size(),
-                    true);
+            pickerBottomLayout.updateSelectedCount(selectedPhotos.size(), true);
             delegate.selectedPhotosChanged();
+        }
+    }
+
+    public void setPhotoCheckedByImageId(int imageId) {
+        if (selectedAlbum != null) {
+            int size = selectedAlbum.photos.size();
+            int index = -1;
+            for (int i = 0; i < size; i++) {
+                if (imageId == selectedAlbum.photos.get(i).imageId) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index != -1) {
+                setPhotoChecked(index);
+            }
         }
     }
 
@@ -717,18 +653,6 @@ public class PhotoPickerActivity extends BaseFragment
                     MediaController.PhotoEntry photoEntry = selectedAlbum.photos.get(index);
                     selectedPhotos.put(photoEntry.imageId, photoEntry);
                 }
-            } else if (selectedPhotos.isEmpty()) {
-                ArrayList<MediaController.SearchImage> array;
-                if (searchResult.isEmpty() && lastSearchString == null) {
-                    array = recentImages;
-                } else {
-                    array = searchResult;
-                }
-                if (index < 0 || index >= array.size()) {
-                    return;
-                }
-                MediaController.SearchImage photoEntry = array.get(index);
-                selectedWebPhotos.put(photoEntry.id, photoEntry);
             }
         }
         sendSelectedPhotos();
@@ -736,7 +660,7 @@ public class PhotoPickerActivity extends BaseFragment
 
     @Override
     public int getSelectedCount() {
-        return selectedPhotos.size() + selectedWebPhotos.size();
+        return selectedPhotos.size();
     }
 
     @Override
@@ -766,7 +690,7 @@ public class PhotoPickerActivity extends BaseFragment
     }
 
     private void sendSelectedPhotos() {
-        if (selectedPhotos.isEmpty() && selectedWebPhotos.isEmpty() || delegate == null
+        if (selectedPhotos.isEmpty() || delegate == null
                 || sendPressed) {
             return;
         }
@@ -910,6 +834,10 @@ public class PhotoPickerActivity extends BaseFragment
                                     int cornerIndex = delegate.generateCheckCorner();
                                     photoEntry.sortindex = cornerIndex;
                                     delegate.putCheckboxTag(photoEntry.imageId, cornerIndex);
+                                } else {
+                                    AndroidUtilities.showToast(
+                                            String.format(Gallery.applicationContext.getString(
+                                                    R.string.MostSelect), limitPickPhoto));
                                 }
 
                                 if (selectedPhotos.size() <= limitPickPhoto) {
@@ -928,19 +856,10 @@ public class PhotoPickerActivity extends BaseFragment
                                     photoEntry = searchResult
                                             .get((Integer) ((View) v.getParent()).getTag());
                                 }
-                                if (selectedWebPhotos.containsKey(photoEntry.id)) {
-                                    selectedWebPhotos.remove(photoEntry.id);
-                                    photoEntry.imagePath = null;
-                                    photoEntry.thumbPath = null;
-                                    updatePhotoAtIndex(index);
-                                } else {
-                                    selectedWebPhotos.put(photoEntry.id, photoEntry);
-                                }
-                                ((PhotoPickerPhotoCell) v.getParent()).setChecked(
-                                        selectedWebPhotos.containsKey(photoEntry.id), true);
+                                ((PhotoPickerPhotoCell) v.getParent()).setChecked(false, true);
                             }
                             pickerBottomLayout.updateSelectedCount(
-                                    selectedPhotos.size() + selectedWebPhotos.size(), true);
+                                    selectedPhotos.size(), true);
                             delegate.selectedPhotosChanged();
                         }
                     });
@@ -994,7 +913,7 @@ public class PhotoPickerActivity extends BaseFragment
                     } else {
                         imageView.setImageResource(R.drawable.nophotos);
                     }
-                    cell.setChecked(selectedWebPhotos.containsKey(photoEntry.id), false);
+                    cell.setChecked(false, false);
                     if (photoEntry.document != null) {
                         showing = PhotoViewer.getInstance().isShowingImage(FileLoader
                                 .getPathToAttach(photoEntry.document, true).getAbsolutePath());

@@ -1,3 +1,4 @@
+
 package com.tangxiaolv.telegramgallery;
 
 import android.content.res.ColorStateList;
@@ -32,7 +33,6 @@ public class Theme {
     }
 
     public static Drawable createBarSelectorDrawable(int color, boolean masked) {
-        Drawable drawable;
         if (Build.VERSION.SDK_INT >= 21) {
             Drawable maskDrawable = null;
             if (masked) {

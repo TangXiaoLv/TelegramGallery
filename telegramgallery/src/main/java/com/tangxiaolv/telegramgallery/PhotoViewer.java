@@ -1,35 +1,6 @@
 
 package com.tangxiaolv.telegramgallery;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenuItem;
-import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
-import com.tangxiaolv.telegramgallery.Components.AspectRatioFrameLayout;
-import com.tangxiaolv.telegramgallery.Components.CheckBox;
-import com.tangxiaolv.telegramgallery.Components.ClippingImageView;
-import com.tangxiaolv.telegramgallery.Components.PhotoCropView;
-import com.tangxiaolv.telegramgallery.Components.PickerBottomLayout;
-import com.tangxiaolv.telegramgallery.Components.SizeNotifierFrameLayoutPhoto;
-import com.tangxiaolv.telegramgallery.TL.Document;
-import com.tangxiaolv.telegramgallery.TL.FileLocation;
-import com.tangxiaolv.telegramgallery.TL.Photo;
-import com.tangxiaolv.telegramgallery.TL.PhotoSize;
-import com.tangxiaolv.telegramgallery.TL.TL_photoEmpty;
-import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
-import com.tangxiaolv.telegramgallery.Utils.FileLoader;
-import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
-import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
-import com.tangxiaolv.telegramgallery.Utils.MediaController;
-import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
-import com.tangxiaolv.telegramgallery.Utils.Utilities;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -65,7 +36,38 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Scroller;
+import android.widget.Toast;
+
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenuItem;
+import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
+import com.tangxiaolv.telegramgallery.Components.AspectRatioFrameLayout;
+import com.tangxiaolv.telegramgallery.Components.CheckBox;
+import com.tangxiaolv.telegramgallery.Components.ClippingImageView;
+import com.tangxiaolv.telegramgallery.Components.PhotoCropView;
+import com.tangxiaolv.telegramgallery.Components.PickerBottomLayout;
+import com.tangxiaolv.telegramgallery.Components.SizeNotifierFrameLayoutPhoto;
+import com.tangxiaolv.telegramgallery.TL.Document;
+import com.tangxiaolv.telegramgallery.TL.FileLocation;
+import com.tangxiaolv.telegramgallery.TL.Photo;
+import com.tangxiaolv.telegramgallery.TL.PhotoSize;
+import com.tangxiaolv.telegramgallery.TL.TL_photoEmpty;
+import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
+import com.tangxiaolv.telegramgallery.Utils.FileLoader;
+import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
+import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
+import com.tangxiaolv.telegramgallery.Utils.LocaleController;
+import com.tangxiaolv.telegramgallery.Utils.MediaController;
+import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
+import com.tangxiaolv.telegramgallery.Utils.Utilities;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("unchecked")
 public class PhotoViewer implements NotificationCenter.NotificationCenterDelegate,
@@ -91,11 +93,13 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private PickerBottomLayout pickerView;
     private PickerBottomLayout editorDoneLayout;
     private RadialProgressView radialProgressViews[] = new RadialProgressView[3];
-    private ActionBarMenuItem cropItem;
+    // private ActionBarMenuItem cropItem;
+    private View indexItem;
     private AnimatorSet currentActionBarAnimation;
     private PhotoCropView photoCropView;
     private AlertDialog visibleDialog;
     private boolean canShowBottom = true;
+    private boolean isSelectPreview;
     private int sendPhotoType = 0;
     private AnimatedFileDrawable currentAnimation;
 
@@ -189,6 +193,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private FileLocation currentUserAvatarLocation = null;
 
     private final static int gallery_menu_crop = 4;
+    private final static int gallery_menu_index = 1;
 
     private final static int PAGE_SPACING = AndroidUtilities.dp(30);
 
@@ -410,11 +415,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         }
 
         @Override
-        public boolean isPreview() {
-            return true;
-        }
-
-        @Override
         public void openPreview() {
 
         }
@@ -422,6 +422,18 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         @Override
         public boolean isSinglePhoto() {
             return false;
+        }
+    }
+
+    /**
+     * 预览已选择
+     */
+    public static class PreviewEmptyPhotoViewerProvider extends EmptyPhotoViewerProvider {
+        public void selectChanged(int index, boolean checked) {
+        }
+
+        public void previewExit() {
+
         }
     }
 
@@ -450,8 +462,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         int getCheckeCorner(int currentIndex);
 
         boolean checkboxEnable();
-
-        boolean isPreview();
 
         void openPreview();
 
@@ -791,6 +801,29 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     closePhoto(true, false);
                 } else if (id == gallery_menu_crop) {
                     switchToEditMode(1);
+                } else if (id == gallery_menu_index && placeProvider != null) {
+                    if (placeProvider instanceof PreviewEmptyPhotoViewerProvider) {
+                        PreviewEmptyPhotoViewerProvider previewProvider = (PreviewEmptyPhotoViewerProvider) placeProvider;
+                        previewProvider.selectChanged(currentIndex, !checkImageView.isChecked());
+                        checkImageView.setChecked(currentIndex + 1, !checkImageView.isChecked(),
+                                true);
+                        pickerView.updateSelectedCount(previewProvider.getSelectedCount(), true);
+                        return;
+                    }
+                    placeProvider.setPhotoChecked(currentIndex);
+                    if (placeProvider.checkboxEnable()) {
+                        int checkeCorner = placeProvider.getCheckeCorner(currentIndex);
+                        if (-1 == checkeCorner && !checkImageView.isChecked()) {
+                            AndroidUtilities.showToast(
+                                    String.format(Gallery.applicationContext.getString(
+                                            R.string.MostSelect),
+                                            PhotoAlbumPickerActivity.limitPickPhoto));
+                        }
+
+                        checkImageView.setChecked(checkeCorner,
+                                placeProvider.isPhotoChecked(currentIndex), true);
+                        updateSelectedCount();
+                    }
                 }
             }
 
@@ -808,8 +841,19 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
         ActionBarMenu menu = actionBar.createMenu();
 
-        cropItem = menu.addItemWithWidth(gallery_menu_crop, R.drawable.photo_crop,
-                AndroidUtilities.dp(56));
+        // cropItem = menu.addItemWithWidth(gallery_menu_crop, R.drawable.photo_crop,
+        // AndroidUtilities.dp(56));
+
+        checkImageView = new CheckBox(containerView.getContext(), R.drawable.selectphoto_large);
+        checkImageView.setDrawBackground(true);
+        checkImageView.setSize(32);
+        checkImageView.setCheckOffset(AndroidUtilities.dp(1));
+        checkImageView.setColor(0xff007aff);
+        LinearLayout.LayoutParams params = LayoutHelper.createLinear(32, 32);
+        params.gravity = Gravity.CENTER_VERTICAL;
+        params.setMargins(0, 0, AndroidUtilities.dp(8), 0);
+        checkImageView.setLayoutParams(params);
+        indexItem = menu.addItem(gallery_menu_index, checkImageView);
 
         bottomLayout = new FrameLayout(actvityContext);
         bottomLayout.setBackgroundColor(0x7f000000);
@@ -907,34 +951,44 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         rightImage.setCrossfadeAlpha((byte) 2);
         rightImage.setInvalidateAll(true);
 
-        WindowManager manager = (WindowManager) Gallery.applicationContext
-                .getSystemService(Activity.WINDOW_SERVICE);
-        int rotation = manager.getDefaultDisplay().getRotation();
-
-        checkImageView = new CheckBox(containerView.getContext(), R.drawable.selectphoto_large);
-        checkImageView.setDrawBackground(true);
-        checkImageView.setSize(45);
-        checkImageView.setCheckOffset(AndroidUtilities.dp(1));
-        checkImageView.setColor(0xff3ccaef);
-        checkImageView.setVisibility(View.GONE);
-        containerView.addView(checkImageView,
-                LayoutHelper.createFrame(45, 45, Gravity.RIGHT | Gravity.TOP, 0,
-                        rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90 ? 58
-                                : 68,
-                        10, 0));
-        checkImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (placeProvider != null) {
-                    placeProvider.setPhotoChecked(currentIndex);
-                    if (placeProvider.checkboxEnable()) {
-                        checkImageView.setChecked(placeProvider.getCheckeCorner(currentIndex),
-                                placeProvider.isPhotoChecked(currentIndex), true);
-                        updateSelectedCount();
-                    }
-                }
-            }
-        });
+        // WindowManager manager = (WindowManager) Gallery.applicationContext
+        // .getSystemService(Activity.WINDOW_SERVICE);
+        // int rotation = manager.getDefaultDisplay().getRotation();
+        //
+        // checkImageView = new CheckBox(containerView.getContext(), R.drawable.selectphoto_large);
+        // checkImageView.setDrawBackground(true);
+        // checkImageView.setSize(32);
+        // checkImageView.setCheckOffset(AndroidUtilities.dp(1));
+        // checkImageView.setColor(0xff007aff);
+        // checkImageView.setVisibility(View.GONE);
+        // containerView.addView(checkImageView,
+        // LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 0,
+        // rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90 ? 58
+        // : 68,
+        // 10, 0));
+        // checkImageView.setOnClickListener(new View.OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // if (placeProvider != null) {
+        // placeProvider.setPhotoChecked(currentIndex);
+        // if (placeProvider.checkboxEnable()) {
+        // int checkeCorner = placeProvider.getCheckeCorner(currentIndex);
+        // if (-1 == checkeCorner && !checkImageView.isChecked()) {
+        // Toast.makeText(Gallery.applicationContext,
+        // String.format(
+        // Gallery.applicationContext
+        // .getString(R.string.MostSelect),
+        // PhotoAlbumPickerActivity.limitPickPhoto),
+        // Toast.LENGTH_SHORT).show();
+        // }
+        //
+        // checkImageView.setChecked(checkeCorner,
+        // placeProvider.isPhotoChecked(currentIndex), true);
+        // updateSelectedCount();
+        // }
+        // }
+        // }
+        // });
     }
 
     private void showAlertDialog(AlertDialog.Builder builder) {
@@ -1083,13 +1137,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     animatorSet.addListener(new AnimatorListenerAdapterProxy() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            pickerView.setVisibility(placeProvider.isPreview() ? View.GONE
-                                    : View.VISIBLE);
-                            actionBar.setVisibility(placeProvider.isPreview() ? View.GONE
-                                    : View.VISIBLE);
+                            pickerView.setVisibility(View.VISIBLE);
+                            actionBar.setVisibility(View.VISIBLE);
                             if (sendPhotoType == 0) {
-                                checkImageView.setVisibility(placeProvider.isPreview() ? View.GONE
-                                        : View.VISIBLE);
+                                checkImageView.setVisibility(View.VISIBLE);
                             }
                         }
                     });
@@ -1179,10 +1230,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     imageMoveAnimation.addListener(new AnimatorListenerAdapterProxy() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            editorDoneLayout.setVisibility(
-                                    placeProvider.isPreview() ? View.GONE : View.VISIBLE);
-                            photoCropView.setVisibility(
-                                    placeProvider.isPreview() ? View.GONE : View.VISIBLE);
+                            editorDoneLayout.setVisibility(View.VISIBLE);
+                            photoCropView.setVisibility(View.VISIBLE);
                         }
 
                         @Override
@@ -1354,9 +1403,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         pickerView.setTranslationY(0);
         checkImageView.setAlpha(1.0f);
         pickerView.setAlpha(1.0f);
-        checkImageView.setVisibility(View.GONE);
-        pickerView.setVisibility(View.GONE);
-        cropItem.setVisibility(View.GONE);
+        checkImageView.setVisibility(isSelectPreview ? View.VISIBLE : View.GONE);
+        pickerView.setVisibility(isSelectPreview ? View.VISIBLE : View.GONE);
+        // cropItem.setVisibility(View.GONE);
         editorDoneLayout.setVisibility(View.GONE);
         if (photoCropView != null) {
             photoCropView.setVisibility(View.GONE);
@@ -1377,16 +1426,15 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             currentUserAvatarLocation = fileLocation;
         } else if (photos != null) {
             if (sendPhotoType == 0) {
-                checkImageView.setVisibility(placeProvider.isPreview() ? View.GONE : View.VISIBLE);
+                checkImageView.setVisibility(View.VISIBLE);
             }
             imagesArrLocals.addAll(photos);
             setImageIndex(index, true);
-            pickerView.setVisibility(placeProvider.isPreview() ? View.GONE
-                    : View.VISIBLE);
+            pickerView.setVisibility(View.VISIBLE);
             bottomLayout.setVisibility(View.GONE);
             canShowBottom = false;
             Object obj = imagesArrLocals.get(index);
-            cropItem.setVisibility(placeProvider.isSinglePhoto()?View.VISIBLE:View.GONE);
+            // cropItem.setVisibility(placeProvider.isSinglePhoto() ? View.VISIBLE : View.GONE);
             updateSelectedCount();
         }
     }
@@ -1696,8 +1744,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 && object.equals(currentPathObject);
     }
 
-    public void openPhotoForSelect(final List<Object> photos, final int index, int type,
+    public void openPhotoForSelect(final List<Object> photos, boolean selectPreview,
+            final int index, int type,
             final PhotoViewerProvider provider) {
+        isSelectPreview = selectPreview;
         sendPhotoType = type;
         if (pickerView != null) {
             pickerView.doneButtonTextView
@@ -1720,7 +1770,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     public void openPhoto(final FileLocation fileLocation, final List<Object> photos,
-            final int index, final PhotoViewerProvider provider, long dialogId, long mDialogId) {
+            final int index, final PhotoViewerProvider provider,
+            long dialogId, long mDialogId) {
         if (parentActivity == null || isVisible || provider == null && checkAnimation()
                 || fileLocation == null && photos == null) {
             return;
@@ -2877,15 +2928,18 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 checkImageView.post(new Runnable() {
                     @Override
                     public void run() {
-                        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) checkImageView
-                                .getLayoutParams();
-                        WindowManager manager = (WindowManager) Gallery.applicationContext
-                                .getSystemService(Activity.WINDOW_SERVICE);
-                        int rotation = manager.getDefaultDisplay().getRotation();
-                        layoutParams.topMargin = AndroidUtilities.dp(
-                                rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90
-                                        ? 58 : 68);
-                        checkImageView.setLayoutParams(layoutParams);
+                        if (checkImageView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+                            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) checkImageView
+                                    .getLayoutParams();
+                            WindowManager manager = (WindowManager) Gallery.applicationContext
+                                    .getSystemService(Activity.WINDOW_SERVICE);
+                            int rotation = manager.getDefaultDisplay().getRotation();
+                            layoutParams.topMargin = AndroidUtilities.dp(
+                                    rotation == Surface.ROTATION_270
+                                            || rotation == Surface.ROTATION_90
+                                                    ? 58 : 68);
+                            checkImageView.setLayoutParams(layoutParams);
+                        }
                     }
                 });
             }

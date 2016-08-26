@@ -21,12 +21,10 @@
     <string name="ClearSearch">Clear search history?</string>
     <string name="ClearButton">Clear</string>
 
-    <string name="SearchImagesTitle">Search web</string>
-    <string name="SearchGifsTitle">Search GIFs</string>
-
     <string name="SearchImagesInfo">WEB SEARCH</string>
+    <string name="MostSelect">你最多只能选择%d张图片</string>
 
-    <string name="Send">确定</string>
+    <string name="Send">完成</string>
     <string name="Cancel">取消</string>
     <string name="Preview">预览</string>
 </resources>

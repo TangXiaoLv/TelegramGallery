@@ -89,6 +89,18 @@ public class ActionBarMenu extends LinearLayout {
         return menuItem;
     }
 
+    public View addItem(int id,View view) {
+        view.setTag(id);
+        addView(view);
+        view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClick((Integer) view.getTag());
+            }
+        });
+        return view;
+    }
+
     public void hideAllPopupMenus() {
         int count = getChildCount();
         for (int a = 0; a < count; a++) {
