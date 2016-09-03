@@ -26,4 +26,5 @@
 
     <string name="Send">Send</string>
     <string name="Cancel">Cancel</string>
+    <string name="album_read_fail">album read fail,please check permission</string>
 </resources>

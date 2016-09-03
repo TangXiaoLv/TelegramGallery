@@ -27,4 +27,5 @@
     <string name="Send">完成</string>
     <string name="Cancel">取消</string>
     <string name="Preview">预览</string>
+    <string name="album_read_fail">相册读取失败,请检查权限</string>
 </resources>

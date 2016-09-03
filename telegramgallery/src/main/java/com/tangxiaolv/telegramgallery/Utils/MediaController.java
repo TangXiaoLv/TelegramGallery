@@ -8,8 +8,6 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -140,10 +138,6 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
 
     private HashMap<Long, Long> typingTimes = new HashMap<>();
 
-    private SensorManager sensorManager;
-    private Sensor linearSensor;
-    private Sensor gravitySensor;
-
     public static final int AUTODOWNLOAD_MASK_PHOTO = 1;
     public static final int AUTODOWNLOAD_MASK_AUDIO = 2;
     public static final int AUTODOWNLOAD_MASK_MUSIC = 16;
@@ -160,17 +154,10 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
     private boolean listenerInProgress = false;
     private HashMap<String, FileDownloadProgressListener> addLaterArray = new HashMap<>();
     private ArrayList<FileDownloadProgressListener> deleteLaterArray = new ArrayList<>();
-    private int lastTag = 0;
 
-    private AudioTrack audioTrackPlayer = null;
     private int playerBufferSize = 0;
-    private boolean decodingFinished = false;
-    private int buffersWrited;
 
-    private ArrayList<AudioBuffer> usedPlayerBuffers = new ArrayList<>();
     private ArrayList<AudioBuffer> freePlayerBuffers = new ArrayList<>();
-    private final Object playerSync = new Object();
-    private final Object playerObjectSync = new Object();
 
     private final Object sync = new Object();
 

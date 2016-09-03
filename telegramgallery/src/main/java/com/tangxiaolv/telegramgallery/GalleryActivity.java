@@ -3,9 +3,12 @@ package com.tangxiaolv.telegramgallery;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.tangxiaolv.telegramgallery.Actionbar.ActionBarLayout;
 import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
@@ -16,8 +19,7 @@ import java.util.ArrayList;
  * 在{@link Activity#onActivityResult}中 通过{@link GalleryActivity#PHOTOS}获取图片资源路径集合返回值(返回List
  * <String>)， 或通过 {@link GalleryActivity#VIDEO}获取视频资源返回值(返回单个视频的path)，
  */
-public class GalleryActivity extends Activity
-        implements ActionBarLayout.ActionBarLayoutDelegate {
+public class GalleryActivity extends Activity implements ActionBarLayout.ActionBarLayoutDelegate {
 
     public static final String PHOTOS = "PHOTOS";
     public static final String VIDEO = "VIDEOS";
@@ -42,12 +44,32 @@ public class GalleryActivity extends Activity
         actionBarLayout.init(mainFragmentsStack);
         actionBarLayout.setDelegate(this);
 
+        String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+        if (checkCallingOrSelfPermission(
+                READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= 23) {
+                requestPermissions(new String[] {
+                        READ_EXTERNAL_STORAGE
+                }, 1);
+                return;
+            }
+            Toast.makeText(this, R.string.album_read_fail, Toast.LENGTH_SHORT).show();
+        }
+        showContent();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            int[] grantResults) {
+        showContent();
+    }
+
+    private void showContent() {
         Intent intent = getIntent();
         boolean singlePhoto = intent.getBooleanExtra(SINGLE_PHOTO, false);
         boolean hasCamera = intent.getBooleanExtra(HAS_CAMERA, false);
         int limitPickPhoto = intent.getIntExtra(LIMIT_PICK_PHOTO, 9);
-        albumPickerActivity = new PhotoAlbumPickerActivity(limitPickPhoto,
-                singlePhoto, false);
+        albumPickerActivity = new PhotoAlbumPickerActivity(limitPickPhoto, singlePhoto, false);
         albumPickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
         actionBarLayout.presentFragment(albumPickerActivity, false, true, true);
     }
@@ -161,14 +183,14 @@ public class GalleryActivity extends Activity
 
     /**
      * 打开相册
-     * 
+     *
      * @param singlePhoto true:单选 false:多选
      * @param limitPickPhoto 照片选取限制
      * @param requestCode 请求码
      */
     public static void openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,
             int requestCode) {
-        limitPickPhoto = singlePhoto ? 1 : limitPickPhoto;
+        limitPickPhoto = singlePhoto ? 1 : limitPickPhoto > 0 ? limitPickPhoto : 1;
         Intent intent = new Intent(activity, GalleryActivity.class);
         intent.putExtra(SINGLE_PHOTO, singlePhoto);
         intent.putExtra(LIMIT_PICK_PHOTO, limitPickPhoto);
