@@ -104,10 +104,11 @@ public class ActionBar extends FrameLayout {
         backButtonTextView.setTextSize(18);
         backButtonTextView.setTextColor(0xffffffff);
         backButtonTextView.setGravity(Gravity.CENTER_VERTICAL);
-        LayoutParams params = LayoutHelper.createFrame(36, -1);
-        params.setMargins(AndroidUtilities.dp(8),0,0,0);
-        backContainer.addView(backButtonTextView, params);
-        addView(backContainer, LayoutHelper.createFrame(54, 54, Gravity.LEFT | Gravity.TOP));
+        LayoutParams textParams = LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP,8,0,0,0);
+        backButtonTextView.setLayoutParams(textParams);
+        backContainer.addView(backButtonTextView);
+        backContainer.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT));
+        addView(backContainer);
 
         backContainer.setOnClickListener(new OnClickListener() {
             @Override
@@ -443,7 +444,7 @@ public class ActionBar extends FrameLayout {
         int textLeft;
         if (backContainer != null && backContainer.getVisibility() != GONE) {
             backContainer.measure(
-                    MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(54), MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(72), MeasureSpec.EXACTLY),
                     actionBarHeightSpec);
             textLeft = AndroidUtilities.dp(AndroidUtilities.isTablet() ? 80 : 72);
         } else {

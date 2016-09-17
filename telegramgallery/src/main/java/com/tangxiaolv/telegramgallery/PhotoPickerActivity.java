@@ -142,7 +142,7 @@ public class PhotoPickerActivity extends BaseFragment
         ActionBarMenu menu = actionBar.createMenu();
 
         TextView cancel = new TextView(context);
-        LinearLayout.LayoutParams cancelParams = LayoutHelper.createLinear(48, -1);
+        LinearLayout.LayoutParams cancelParams = LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, -1);
         cancel.setTextSize(18);
         cancel.setText(LocaleController.getString("Cancel", R.string.Cancel));
         cancel.setTextColor(0xffffffff);

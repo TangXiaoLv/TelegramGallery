@@ -65,6 +65,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.DATE_TAKEN,
             MediaStore.Images.Media.ORIENTATION
+//             MediaStore.Files.FileColumns.MIME_TYPE
     };
 
     private static final String[] projectionVideo = {
@@ -203,7 +204,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 @Override
                 public void run() {
                     refreshGalleryRunnable = null;
-                    loadGalleryPhotosAlbums(0);
+                    loadGalleryPhotosAlbums(0, null);
                 }
             }, 2000);
         }
@@ -224,7 +225,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 @Override
                 public void run() {
                     refreshGalleryRunnable = null;
-                    loadGalleryPhotosAlbums(0);
+                    loadGalleryPhotosAlbums(0, null);
                 }
             }, 2000);
         }
@@ -522,7 +523,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
         }
     }
 
-    public static void loadGalleryPhotosAlbums(final int guid) {
+    public static void loadGalleryPhotosAlbums(final int guid, final String[] filterMimiType) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -533,6 +534,23 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 String cameraFolder = Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
                         .getAbsolutePath() + "/" + "Camera/";
+
+                // 相当于我们常用sql where 后面的写法
+                StringBuilder selectionBuilder = null;
+                if (filterMimiType != null && filterMimiType.length > 0) {
+                    selectionBuilder = new StringBuilder();
+                    int length = filterMimiType.length;
+                    for (int i = 0; i < length; i++) {
+                        String mimeType = MediaStore.Files.FileColumns.MIME_TYPE;
+                        if (0 == i) {
+                            selectionBuilder.append(mimeType).append(" !=?");
+                        } else {
+                            selectionBuilder.append(" and ").append(mimeType).append(" !=?");
+                        }
+                    }
+                }
+                String selection = selectionBuilder == null ? null : selectionBuilder.toString();
+
                 Integer cameraAlbumId = null;
                 Integer cameraAlbumVideoId = null;
 
@@ -541,7 +559,8 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     cursor = MediaStore.Images.Media.query(
                             Gallery.applicationContext.getContentResolver(),
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projectionPhotos,
-                            null, null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
+                            selection, filterMimiType,
+                            MediaStore.Images.Media.DATE_TAKEN + " DESC");
                     if (cursor != null) {
                         int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
                         int bucketIdColumn = cursor
@@ -553,6 +572,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                 .getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                         int orientationColumn = cursor
                                 .getColumnIndex(MediaStore.Images.Media.ORIENTATION);
+//                         int mimeTypeColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.MIME_TYPE);
 
                         while (cursor.moveToNext()) {
                             int imageId = cursor.getInt(imageIdColumn);
@@ -561,6 +581,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                             String path = cursor.getString(dataColumn);
                             long dateTaken = cursor.getLong(dateColumn);
                             int orientation = cursor.getInt(orientationColumn);
+//                             String mimeType = cursor.getString(mimeTypeColumn);
 
                             if (path == null || path.length() == 0) {
                                 continue;
@@ -612,11 +633,12 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
 
                 try {
                     albums.clear();
+                    cursor = null;
                     AlbumEntry allVideosAlbum = null;
-                    cursor = MediaStore.Images.Media.query(
-                            Gallery.applicationContext.getContentResolver(),
-                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
-                            null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
+                    // cursor = MediaStore.Images.Media.query(
+                    // Gallery.applicationContext.getContentResolver(),
+                    // MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
+                    // null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
                     if (cursor != null) {
                         int imageIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID);
                         int bucketIdColumn = cursor

@@ -15,6 +15,7 @@
     <string name="AttachPhoto">Photo</string>
     <string name="Of">%1$d of %2$d</string>
     <string name="Set">Set</string>
+    <string name="Album">Album</string>
 
     <string name="ClearSearch">Clear search history?</string>
     <string name="ClearButton">Clear</string>
@@ -24,7 +25,8 @@
 
     <string name="SearchImagesInfo">WEB SEARCH</string>
 
-    <string name="Send">Send</string>
+    <string name="Send">finish</string>
     <string name="Cancel">Cancel</string>
+    <string name="Preview">Preview</string>
     <string name="album_read_fail">album read fail,please check permission</string>
 </resources>

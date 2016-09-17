@@ -66,6 +66,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     private boolean singlePhoto;
     private boolean allowGifs;
     private int selectedMode;
+    private final String[] filterMimeTypes;
 
     private final int[] imageCheckIndexArr;
 
@@ -75,10 +76,11 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     private final static int item_photos = 2;
     private final static int item_video = 3;
 
-    public PhotoAlbumPickerActivity(int limitPick, boolean singlePhoto,
+    public PhotoAlbumPickerActivity(String[] filterMimeTypes,int limitPick, boolean singlePhoto,
             boolean allowGifs) {
         super();
         limitPickPhoto = limitPick;
+        this.filterMimeTypes = filterMimeTypes;
         this.imageCheckIndexArr = new int[limitPick];
         this.singlePhoto = singlePhoto;
         this.allowGifs = allowGifs;
@@ -87,7 +89,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     @Override
     public boolean onFragmentCreate() {
         loading = true;
-        MediaController.loadGalleryPhotosAlbums(classGuid);
+        MediaController.loadGalleryPhotosAlbums(classGuid,filterMimeTypes);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.albumsDidLoaded);
         return super.onFragmentCreate();
     }
@@ -189,7 +191,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         // layoutParams.gravity = Gravity.CENTER_VERTICAL;
         // dropDown.setLayoutParams(layoutParams);
         // } else {
-        actionBar.setTitle(LocaleController.getString("Gallery", R.string.Gallery));
+        actionBar.setTitle(LocaleController.getString("Album", R.string.Album));
         // }
 
         listView = new ListView(context);

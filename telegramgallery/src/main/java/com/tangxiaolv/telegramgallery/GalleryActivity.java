@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.tangxiaolv.telegramgallery.Actionbar.ActionBarLayout;
 import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
+import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -27,6 +28,7 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     private static final String SINGLE_PHOTO = "SINGLE_PHOTO";
     private static final String LIMIT_PICK_PHOTO = "LIMIT_PICK_PHOTO";
     private static final String HAS_CAMERA = "HAS_CAMERA";
+    private static final String FILTER_MIME_TYPES = "FILTER_MIME_TYPES";
 
     private ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
     private ActionBarLayout actionBarLayout;
@@ -69,7 +71,9 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
         boolean singlePhoto = intent.getBooleanExtra(SINGLE_PHOTO, false);
         boolean hasCamera = intent.getBooleanExtra(HAS_CAMERA, false);
         int limitPickPhoto = intent.getIntExtra(LIMIT_PICK_PHOTO, 9);
-        albumPickerActivity = new PhotoAlbumPickerActivity(limitPickPhoto, singlePhoto, false);
+        String[] filterMimeTypes = intent.getStringArrayExtra(FILTER_MIME_TYPES);
+        albumPickerActivity = new PhotoAlbumPickerActivity(filterMimeTypes, limitPickPhoto,
+                singlePhoto, false);
         albumPickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
         actionBarLayout.presentFragment(albumPickerActivity, false, true, true);
     }
@@ -172,6 +176,7 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     @Override
     protected void onDestroy() {
         PhotoViewer.getInstance().destroyPhotoViewer();
+        ImageLoader.getInstance().clearMemory();
         albumPickerActivity.removeSelfFromStack();
         actionBarLayout.clear();
         mainFragmentsStack.clear();
@@ -184,21 +189,34 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     /**
      * 打开相册
      *
+     * @param filterMimeTypes
+     *            需要过滤掉的媒体文件类型，以MimeType标识：{http://www.w3school.com.cn/media/media_mimeref.asp}
+     *            <span>eg:new String[]{"image/gif","image/jpeg"}<span/>
      * @param singlePhoto true:单选 false:多选
      * @param limitPickPhoto 照片选取限制
      * @param requestCode 请求码
      */
-    public static void openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,
+    public static void openActivity(
+            Activity activity,
+            String[] filterMimeTypes,
+            boolean singlePhoto,
+            int limitPickPhoto,
             int requestCode) {
         limitPickPhoto = singlePhoto ? 1 : limitPickPhoto > 0 ? limitPickPhoto : 1;
         Intent intent = new Intent(activity, GalleryActivity.class);
         intent.putExtra(SINGLE_PHOTO, singlePhoto);
         intent.putExtra(LIMIT_PICK_PHOTO, limitPickPhoto);
+        intent.putExtra(FILTER_MIME_TYPES, filterMimeTypes);
         intent.putExtra(HAS_CAMERA, /* hasCamera */false);
         activity.startActivityForResult(intent, requestCode);
     }
 
+    public static void openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,
+            int requestCode) {
+        openActivity(activity,null, singlePhoto, limitPickPhoto, requestCode);
+    }
+
     public static void openActivity(Activity activity, boolean singlePhoto, int requestCode) {
-        openActivity(activity, singlePhoto, 1, requestCode);
+        openActivity(activity, null, singlePhoto, 1, requestCode);
     }
 }

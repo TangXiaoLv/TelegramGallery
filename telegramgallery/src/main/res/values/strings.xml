@@ -16,7 +16,7 @@
     <string name="AttachPhoto">图片</string>
     <string name="Of">%1$d / %2$d</string>
     <string name="Set">设置</string>
-    <string name="Gallery">相册</string>
+    <string name="Album">相册</string>
 
     <string name="ClearSearch">Clear search history?</string>
     <string name="ClearButton">Clear</string>
