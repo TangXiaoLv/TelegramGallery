@@ -212,7 +212,7 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     }
 
     public static void openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,
-            int requestCode) {
+        int requestCode) {
         openActivity(activity,null, singlePhoto, limitPickPhoto, requestCode);
     }
 

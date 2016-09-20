@@ -1758,8 +1758,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             return;
         }
 
-        final PlaceProviderObject object = provider.getPlaceForPhoto(fileLocation, index);
-        if (object == null && photos == null) {
+        final PlaceProviderObject placeProviderObject = provider.getPlaceForPhoto(fileLocation, index);
+        if (placeProviderObject == null && photos == null) {
             return;
         }
 
@@ -1805,28 +1805,28 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         isVisible = true;
         toggleActionBar(true, false);
 
-        if (object != null) {
+        if (placeProviderObject != null) {
             disableShowCheck = true;
             animationInProgress = 1;
 
-            onPhotoShow(fileLocation, photos, index, object);
+            onPhotoShow(fileLocation, photos, index, placeProviderObject);
 
-            final Rect drawRegion = object.imageReceiver.getDrawRegion();
-            int orientation = object.imageReceiver.getOrientation();
+            final Rect drawRegion = placeProviderObject.imageReceiver.getDrawRegion();
+            int orientation = placeProviderObject.imageReceiver.getOrientation();
 
             animatingImageView.setVisibility(View.VISIBLE);
-            animatingImageView.setRadius(object.radius);
+            animatingImageView.setRadius(placeProviderObject.radius);
             animatingImageView.setOrientation(orientation);
-            animatingImageView.setNeedRadius(object.radius != 0);
-            animatingImageView.setImageBitmap(object.thumb);
+            animatingImageView.setNeedRadius(placeProviderObject.radius != 0);
+            animatingImageView.setImageBitmap(placeProviderObject.thumb);
 
             animatingImageView.setAlpha(1.0f);
             animatingImageView.setPivotX(0.0f);
             animatingImageView.setPivotY(0.0f);
-            animatingImageView.setScaleX(object.scale);
-            animatingImageView.setScaleY(object.scale);
-            animatingImageView.setTranslationX(object.viewX + drawRegion.left * object.scale);
-            animatingImageView.setTranslationY(object.viewY + drawRegion.top * object.scale);
+            animatingImageView.setScaleX(placeProviderObject.scale);
+            animatingImageView.setScaleY(placeProviderObject.scale);
+            animatingImageView.setTranslationX(placeProviderObject.viewX + drawRegion.left * placeProviderObject.scale);
+            animatingImageView.setTranslationY(placeProviderObject.viewY + drawRegion.top * placeProviderObject.scale);
             final ViewGroup.LayoutParams layoutParams = animatingImageView.getLayoutParams();
             layoutParams.width = (drawRegion.right - drawRegion.left);
             layoutParams.height = (drawRegion.bottom - drawRegion.top);
@@ -1841,19 +1841,19 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             float xPos = (AndroidUtilities.displaySize.x - width) / 2.0f;
             float yPos = (AndroidUtilities.displaySize.y - AndroidUtilities.statusBarHeight
                     - height) / 2.0f;
-            int clipHorizontal = Math.abs(drawRegion.left - object.imageReceiver.getImageX());
-            int clipVertical = Math.abs(drawRegion.top - object.imageReceiver.getImageY());
+            int clipHorizontal = Math.abs(drawRegion.left - placeProviderObject.imageReceiver.getImageX());
+            int clipVertical = Math.abs(drawRegion.top - placeProviderObject.imageReceiver.getImageY());
 
             int coords2[] = new int[2];
-            object.parentView.getLocationInWindow(coords2);
+            placeProviderObject.parentView.getLocationInWindow(coords2);
             int clipTop = coords2[1] - AndroidUtilities.statusBarHeight
-                    - (object.viewY + drawRegion.top) + object.clipTopAddition;
+                    - (placeProviderObject.viewY + drawRegion.top) + placeProviderObject.clipTopAddition;
             if (clipTop < 0) {
                 clipTop = 0;
             }
-            int clipBottom = (object.viewY + drawRegion.top + layoutParams.height) - (coords2[1]
-                    + object.parentView.getHeight() - AndroidUtilities.statusBarHeight)
-                    + object.clipBottomAddition;
+            int clipBottom = (placeProviderObject.viewY + drawRegion.top + layoutParams.height) - (coords2[1]
+                    + placeProviderObject.parentView.getHeight() - AndroidUtilities.statusBarHeight)
+                    + placeProviderObject.clipBottomAddition;
             if (clipBottom < 0) {
                 clipBottom = 0;
             }
@@ -1864,9 +1864,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             animationValues[0][1] = animatingImageView.getScaleY();
             animationValues[0][2] = animatingImageView.getTranslationX();
             animationValues[0][3] = animatingImageView.getTranslationY();
-            animationValues[0][4] = clipHorizontal * object.scale;
-            animationValues[0][5] = clipTop * object.scale;
-            animationValues[0][6] = clipBottom * object.scale;
+            animationValues[0][4] = clipHorizontal * placeProviderObject.scale;
+            animationValues[0][5] = clipTop * placeProviderObject.scale;
+            animationValues[0][6] = clipBottom * placeProviderObject.scale;
             animationValues[0][7] = animatingImageView.getRadius();
 
             animationValues[1][0] = scale;
@@ -1959,7 +1959,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 @Override
                 public void run() {
                     disableShowCheck = false;
-                    object.imageReceiver.setVisible(false, true);
+                    placeProviderObject.imageReceiver.setVisible(false, true);
                 }
             };
         } else {
@@ -1973,7 +1973,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
             backgroundDrawable.setAlpha(255);
             containerView.setAlpha(1.0f);
-            onPhotoShow(fileLocation, photos, index, object);
+            onPhotoShow(fileLocation, photos, index, placeProviderObject);
         }
     }
 
