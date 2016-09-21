@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 
 tasks.withType(Javadoc) {
-    enabled = false
+    enabled = false //禁用生成javadoc的任务
     options.encoding = "UTF-8"
 }
 

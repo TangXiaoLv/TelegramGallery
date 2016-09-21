@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
 import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenuItem;
 import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
 import com.tangxiaolv.telegramgallery.Components.PhotoPickerAlbumsCell;
@@ -76,7 +78,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     private final static int item_photos = 2;
     private final static int item_video = 3;
 
-    public PhotoAlbumPickerActivity(String[] filterMimeTypes,int limitPick, boolean singlePhoto,
+    public PhotoAlbumPickerActivity(String[] filterMimeTypes, int limitPick, boolean singlePhoto,
             boolean allowGifs) {
         super();
         limitPickPhoto = limitPick;
@@ -89,7 +91,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     @Override
     public boolean onFragmentCreate() {
         loading = true;
-        MediaController.loadGalleryPhotosAlbums(classGuid,filterMimeTypes);
+        MediaController.loadGalleryPhotosAlbums(classGuid, filterMimeTypes);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.albumsDidLoaded);
         return super.onFragmentCreate();
     }
@@ -139,60 +141,61 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             }
         });
 
+
         fragmentView = new FrameLayout(context);
 
         FrameLayout frameLayout = (FrameLayout) fragmentView;
         frameLayout.setBackgroundColor(DarkTheme ? 0xff000000 : 0xffffffff);
+        //==============videos pick====================
+        if (!singlePhoto) {
+            selectedMode = 0;
 
-        // if (!singlePhoto) {
-        // selectedMode = 0;
-        //
-        // dropDownContainer = new ActionBarMenuItem(context, menu, 0);
-        // dropDownContainer.setSubMenuOpenSide(1);
-        // dropDownContainer.addSubItem(item_photos,
-        // LocaleController.getString("PickerPhotos", R.string.PickerPhotos), 0);
-        // dropDownContainer.addSubItem(item_video,
-        // LocaleController.getString("PickerVideo", R.string.PickerVideo), 0);
-        // actionBar.addView(dropDownContainer);
-        // FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
-        // .getLayoutParams();
-        // layoutParams.height = LayoutHelper.MATCH_PARENT;
-        // layoutParams.width = LayoutHelper.WRAP_CONTENT;
-        // layoutParams.rightMargin = AndroidUtilities.dp(40);
-        // layoutParams.leftMargin = AndroidUtilities.isTablet() ? AndroidUtilities.dp(64)
-        // : AndroidUtilities.dp(56);
-        // layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-        // dropDownContainer.setLayoutParams(layoutParams);
-        // dropDownContainer.setOnClickListener(new View.OnClickListener() {
-        // @Override
-        // public void onClick(View view) {
-        // dropDownContainer.toggleSubMenu();
-        // }
-        // });
-        //
-        // dropDown = new TextView(context);
-        // dropDown.setGravity(Gravity.LEFT);
-        // dropDown.setSingleLine(true);
-        // dropDown.setLines(1);
-        // dropDown.setMaxLines(1);
-        // dropDown.setEllipsize(TextUtils.TruncateAt.END);
-        // dropDown.setTextColor(0xffffffff);
-        // // dropDown.getPaint().setFakeBoldText(true);
-        // dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down,
-        // 0);
-        // dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
-        // dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
-        // dropDown.setText(LocaleController.getString("PickerPhotos", R.string.PickerPhotos));
-        // dropDownContainer.addView(dropDown);
-        // layoutParams = (FrameLayout.LayoutParams) dropDown.getLayoutParams();
-        // layoutParams.width = LayoutHelper.WRAP_CONTENT;
-        // layoutParams.height = LayoutHelper.WRAP_CONTENT;
-        // layoutParams.leftMargin = AndroidUtilities.dp(16);
-        // layoutParams.gravity = Gravity.CENTER_VERTICAL;
-        // dropDown.setLayoutParams(layoutParams);
-        // } else {
-        actionBar.setTitle(LocaleController.getString("Album", R.string.Album));
-        // }
+            ActionBarMenu menu = actionBar.createMenu();
+            dropDownContainer = new ActionBarMenuItem(context, menu, 0);
+            dropDownContainer.setSubMenuOpenSide(1);
+            dropDownContainer.addSubItem(item_photos,
+                    LocaleController.getString("PickerPhotos", R.string.PickerPhotos), 0);
+            dropDownContainer.addSubItem(item_video,
+                    LocaleController.getString("PickerVideo", R.string.PickerVideo), 0);
+            actionBar.addView(dropDownContainer);
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
+                    .getLayoutParams();
+            layoutParams.height = LayoutHelper.MATCH_PARENT;
+            layoutParams.width = LayoutHelper.WRAP_CONTENT;
+            // layoutParams.rightMargin = AndroidUtilities.dp(40);
+            // layoutParams.leftMargin = AndroidUtilities.getRealScreenSize().x / 2;
+            layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+            dropDownContainer.setLayoutParams(layoutParams);
+            dropDownContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dropDownContainer.toggleSubMenu();
+                }
+            });
+
+            dropDown = new TextView(context);
+            dropDown.setGravity(Gravity.LEFT);
+            dropDown.setSingleLine(true);
+            dropDown.setLines(1);
+            dropDown.setMaxLines(1);
+            dropDown.setEllipsize(TextUtils.TruncateAt.END);
+            dropDown.setTextColor(0xffffffff);
+            // dropDown.getPaint().setFakeBoldText(true);
+            dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down,
+                    0);
+            dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
+//            dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
+            dropDown.setText(LocaleController.getString("PickerPhotos", R.string.PickerPhotos));
+            dropDownContainer.addView(dropDown);
+            layoutParams = (FrameLayout.LayoutParams) dropDown.getLayoutParams();
+            layoutParams.width = LayoutHelper.WRAP_CONTENT;
+            layoutParams.height = LayoutHelper.WRAP_CONTENT;
+//            layoutParams.leftMargin = AndroidUtilities.dp(dropDown.getTextSize());
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+            dropDown.setLayoutParams(layoutParams);
+        } else {
+            actionBar.setTitle(LocaleController.getString("Album", R.string.Album));
+        }
 
         listView = new ListView(context);
         listView.setPadding(AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4),

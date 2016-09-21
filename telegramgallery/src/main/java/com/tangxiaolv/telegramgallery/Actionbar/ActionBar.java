@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.Gravity;
@@ -58,6 +59,7 @@ public class ActionBar extends FrameLayout {
     private boolean isBackOverlayVisible;
     protected BaseFragment parentFragment;
     public ActionBarMenuOnItemClick actionBarMenuOnItemClick;
+    private Point screenSize;
 
     public ActionBar(Context context) {
         super(context);
@@ -224,6 +226,7 @@ public class ActionBar extends FrameLayout {
         if (menu != null) {
             return menu;
         }
+        screenSize = AndroidUtilities.getRealScreenSize();
         menu = new ActionBarMenu(getContext(), this);
         addView(menu, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT,
                 LayoutHelper.MATCH_PARENT, Gravity.RIGHT));
@@ -592,6 +595,25 @@ public class ActionBar extends FrameLayout {
                     break;
                 default:
                     childTop = lp.topMargin;
+            }
+
+            //标题居中
+            childLeft = screenSize.x / 2;
+            if (child instanceof ActionBarMenuItem){
+                int realTextSize;
+                int count = ((ActionBarMenuItem) child).getChildCount();
+                for (int j = 0; j < count; j++) {
+                    if (((ActionBarMenuItem) child).getChildAt(j) instanceof TextView){
+                        TextView innertext = (TextView) ((ActionBarMenuItem) child).getChildAt(j);
+                        realTextSize = width - innertext.getCompoundDrawablePadding();
+                        Drawable rightDrawable = innertext.getCompoundDrawables()[2];
+                        if (rightDrawable != null){
+                            realTextSize -= rightDrawable.getIntrinsicWidth();
+                        }
+                        childLeft -= realTextSize / 2;
+                        break;
+                    }
+                }
             }
             child.layout(childLeft, childTop, childLeft + width, childTop + height);
         }
