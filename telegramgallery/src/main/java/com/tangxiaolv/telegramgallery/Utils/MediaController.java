@@ -635,10 +635,10 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     albums.clear();
                     cursor = null;
                     AlbumEntry allVideosAlbum = null;
-                    // cursor = MediaStore.Images.Media.query(
-                    // Gallery.applicationContext.getContentResolver(),
-                    // MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
-                    // null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
+                     cursor = MediaStore.Images.Media.query(
+                     Gallery.applicationContext.getContentResolver(),
+                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
+                     null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
                     if (cursor != null) {
                         int imageIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID);
                         int bucketIdColumn = cursor

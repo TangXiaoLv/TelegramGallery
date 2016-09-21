@@ -1,7 +1,7 @@
 # TelegramGallery
-English | [中文]() 
+中文 | [English]()
 
-Fast，efficient，low memory selector of album,extract from[Telegram](https://github.com/DrKLO/Telegram). Support singleSelection select, Multiselect, photo preview，scalable ,sliding to quit preview，QQ selected style.
+快速，高效，低耗相册选择器，抽取自[Telegram](https://github.com/DrKLO/Telegram)，支持单选，多选，预览，缩放，滑动取消预览，QQ选择特性
 
 <img src="png/1.gif" height= "528" width="320">
 
@@ -15,27 +15,28 @@ Fast，efficient，low memory selector of album,extract from[Telegram](https://g
 ```
 ###Usage
 ```
-//open album
+//打开相册
+方式一：
 GalleryActivity.openActivity(
             Activity activity,
-            String[] filterMimeTypes,//Filter the specified type， Follow the rule of standard of mime type 。eg：new String[]{"image/gif","image/png"}
-            boolean singlePhoto,//true：singleSelection，false： Multiselect
-            int limitPickPhoto,//limit for pick photo nums，when singlePhoto=false,the param is available
-            int requestCode)
+            String[] filterMimeTypes,//过滤掉指定类型，遵守MIME Type类型规范。eg：new String[]{"image/gif","image/png"}
+            boolean singlePhoto,//true 单选，false 多选
+            int limitPickPhoto,//图片可选数量限制，当singlePhoto=false时生效
+            int requestCode)//请求码
 
-//or
+方式二：
 GalleryActivity.openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,int requestCode)
 
-//or
+方式三：
 GalleryActivity.openActivity(Activity activity, boolean singlePhoto, int requestCode)
 
-//process result
+//接受返回值
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	//list of photos of seleced
+	//照片路径集合返回值
     List<String> photos = (List<String>) data.getSerializableExtra(GalleryActivity.PHOTOS);
 
-	//list of videos of seleced
+	//视频路径集合返回值
 	List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEOS);
 }
 ```
@@ -54,3 +55,4 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+

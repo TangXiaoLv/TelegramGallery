@@ -1,6 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 
+tasks.withType(Javadoc) {
+    enabled = false
+    options.encoding = "UTF-8"
+}
+
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'telegramgallery' //maven 仓库中的包名
@@ -30,7 +35,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
