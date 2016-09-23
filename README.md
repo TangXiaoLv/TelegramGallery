@@ -51,4 +51,4 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 }
 ```
 ##License
-```GPL-2.0```
+GPL-2.0
