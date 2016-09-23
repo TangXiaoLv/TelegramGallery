@@ -6,6 +6,13 @@ Fast，efficiently，low memory selector of album,extract from [Telegram](https:
 <img src="png/1.gif" height= "528" width="320">
 
 ##Getting Started
+###Gradle
+```
+dependencies {
+    compile 'com.library.tangxiaolv:telegramgallery:1.0.1'
+}
+```
+
 ###configuration
 ```
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>

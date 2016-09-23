@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.tangxiaolv.telegramgallery.Actionbar.ActionBarLayout;
 import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
@@ -55,7 +54,7 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
                 }, 1);
                 return;
             }
-            Toast.makeText(this, R.string.album_read_fail, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, R.string.album_read_fail, Toast.LENGTH_SHORT).show();
         }
         showContent();
     }
