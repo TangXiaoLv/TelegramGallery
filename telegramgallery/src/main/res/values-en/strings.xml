@@ -24,6 +24,7 @@
     <string name="SearchGifsTitle">Search GIFs</string>
 
     <string name="SearchImagesInfo">WEB SEARCH</string>
+	<string name="MostSelect">You can select up to %d pictures</string>
 
     <string name="Send">finish</string>
     <string name="Cancel">Cancel</string>
