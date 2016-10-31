@@ -30,6 +30,7 @@ GalleryConfig config = new GalleryConfig.Build()
                         .hintOfPick("this is pick hint")
                         .filterMimeTypes(new String[]{"image/jpeg"})
                         .build();
+GalleryActivity.openActivity(MainActivity.this, reqCode, config);
 
 //接受返回值
 @Override
