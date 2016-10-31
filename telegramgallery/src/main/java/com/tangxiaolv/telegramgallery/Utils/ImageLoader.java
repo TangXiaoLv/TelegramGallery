@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
@@ -1851,12 +1852,21 @@ public class ImageLoader {
                 inputStream = Gallery.applicationContext.getContentResolver()
                         .openInputStream(uri);
                 BitmapFactory.decodeStream(inputStream, null, bmOptions);
-                inputStream.close();
+                if (inputStream != null)
+                    inputStream.close();
                 inputStream = Gallery.applicationContext.getContentResolver()
                         .openInputStream(uri);
             } catch (Throwable e) {
                 e.printStackTrace();
                 return null;
+            }finally {
+                if (inputStream != null){
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         float photoW = bmOptions.outWidth;

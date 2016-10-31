@@ -48,6 +48,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.ContextThemeWrapper;
 import android.view.GestureDetector;
@@ -65,6 +66,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
+
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.limitPickPhoto;
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.sHintOfPick;
 
 @SuppressWarnings("unchecked")
 public class PhotoViewer implements NotificationCenter.NotificationCenterDelegate,
@@ -795,10 +799,12 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     if (placeProvider.checkboxEnable()) {
                         int checkeCorner = placeProvider.getCheckeCorner(currentIndex);
                         if (-1 == checkeCorner && !checkImageView.isChecked()) {
-                            AndroidUtilities.showToast(
-                                    String.format(Gallery.applicationContext.getString(
-                                            R.string.MostSelect),
-                                            PhotoAlbumPickerActivity.limitPickPhoto));
+                            String hintOfPick = sHintOfPick;
+                            String defHint = String.format(Gallery.applicationContext
+                                    .getString(R.string.MostSelect), limitPickPhoto);
+                            hintOfPick = TextUtils.isEmpty(hintOfPick) ? defHint
+                                    : sHintOfPick;
+                            AndroidUtilities.showToast(hintOfPick);
                         }
 
                         checkImageView.setChecked(checkeCorner,

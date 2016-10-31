@@ -15,6 +15,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.tangxiaolv.telegramgallery.GalleryActivity;
+import com.tangxiaolv.telegramgallery.GalleryConfig;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> photos;
     private BaseAdapter adapter;
+    private int reqCode = 12;
 
     @SuppressWarnings("all")
     @Override
@@ -70,14 +72,22 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GalleryActivity.openActivity(MainActivity.this, false, 9, 12);
+                GalleryConfig config = new GalleryConfig.Build()
+                        .limitPickPhoto(3)
+                        .singlePhoto(false)
+//                        .hintOfPick("this is pick hint")
+//                        .filterMimeTypes(new String[]{"image/jpeg"})
+                        .build();
+                GalleryActivity.openActivity(MainActivity.this, reqCode, config);
             }
         });
 
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GalleryActivity.openActivity(MainActivity.this, true,9, 12);
+                GalleryConfig config = new GalleryConfig.Build()
+                        .singlePhoto(true).build();
+                GalleryActivity.openActivity(MainActivity.this, reqCode, config);
             }
         });
     }

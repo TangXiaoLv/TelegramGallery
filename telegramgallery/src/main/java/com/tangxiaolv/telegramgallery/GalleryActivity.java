@@ -16,18 +16,16 @@ import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
 import java.util.ArrayList;
 
 /**
- * 在{@link Activity#onActivityResult}中 通过{@link GalleryActivity#PHOTOS}获取图片资源路径集合返回值(返回List
- * <String>)， 或通过 {@link GalleryActivity#VIDEO}获取视频资源返回值(返回单个视频的path)，
+ * receive {@link java.util.List<String>} of photo path or video path by
+ * {@link GalleryActivity#PHOTOS} or {@link GalleryActivity#VIDEO} in
+ * {@link Activity#onActivityResult}
  */
 public class GalleryActivity extends Activity implements ActionBarLayout.ActionBarLayoutDelegate {
 
     public static final String PHOTOS = "PHOTOS";
     public static final String VIDEO = "VIDEOS";
 
-    private static final String SINGLE_PHOTO = "SINGLE_PHOTO";
-    private static final String LIMIT_PICK_PHOTO = "LIMIT_PICK_PHOTO";
-    private static final String HAS_CAMERA = "HAS_CAMERA";
-    private static final String FILTER_MIME_TYPES = "FILTER_MIME_TYPES";
+    private static final String GALLERY_CONFIG = "GALLERY_CONFIG";
 
     private ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
     private ActionBarLayout actionBarLayout;
@@ -54,7 +52,6 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
                 }, 1);
                 return;
             }
-            //Toast.makeText(this, R.string.album_read_fail, Toast.LENGTH_SHORT).show();
         }
         showContent();
     }
@@ -67,12 +64,13 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
 
     private void showContent() {
         Intent intent = getIntent();
-        boolean singlePhoto = intent.getBooleanExtra(SINGLE_PHOTO, false);
-        boolean hasCamera = intent.getBooleanExtra(HAS_CAMERA, false);
-        int limitPickPhoto = intent.getIntExtra(LIMIT_PICK_PHOTO, 9);
-        String[] filterMimeTypes = intent.getStringArrayExtra(FILTER_MIME_TYPES);
-        albumPickerActivity = new PhotoAlbumPickerActivity(filterMimeTypes, limitPickPhoto,
-                singlePhoto, false);
+        GalleryConfig config = intent.getParcelableExtra(GALLERY_CONFIG);
+        albumPickerActivity = new PhotoAlbumPickerActivity(
+                config.getFilterMimeTypes(),
+                config.getLimitPickPhoto(),
+                config.isSinglePhoto(),
+                config.getHintOfPick(),
+                false);
         albumPickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
         actionBarLayout.presentFragment(albumPickerActivity, false, true, true);
     }
@@ -186,35 +184,39 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     }
 
     /**
-     * 打开相册
-     *
-     * @param filterMimeTypes
-     *            需要过滤掉的媒体文件类型，以MimeType标识：{http://www.w3school.com.cn/media/media_mimeref.asp}
-     *            <span>eg:new String[]{"image/gif","image/jpeg"}<span/>
-     * @param singlePhoto true:单选 false:多选
-     * @param limitPickPhoto 照片选取限制
-     * @param requestCode 请求码
+     * open gallery
+     * 
+     * @param activity parent activity
+     * @param requestCode {@link Activity#onActivityResult}
+     * @param config {@link GalleryConfig}
      */
+    public static void openActivity(Activity activity, int requestCode, GalleryConfig config) {
+        Intent intent = new Intent(activity, GalleryActivity.class);
+        intent.putExtra(GALLERY_CONFIG, config);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    @Deprecated
     public static void openActivity(
             Activity activity,
             String[] filterMimeTypes,
             boolean singlePhoto,
             int limitPickPhoto,
             int requestCode) {
-        limitPickPhoto = singlePhoto ? 1 : limitPickPhoto > 0 ? limitPickPhoto : 1;
-        Intent intent = new Intent(activity, GalleryActivity.class);
-        intent.putExtra(SINGLE_PHOTO, singlePhoto);
-        intent.putExtra(LIMIT_PICK_PHOTO, limitPickPhoto);
-        intent.putExtra(FILTER_MIME_TYPES, filterMimeTypes);
-        intent.putExtra(HAS_CAMERA, /* hasCamera */false);
-        activity.startActivityForResult(intent, requestCode);
+        GalleryConfig.Build build = new GalleryConfig.Build();
+        build.filterMimeTypes(filterMimeTypes)
+                .singlePhoto(singlePhoto)
+                .limitPickPhoto(limitPickPhoto);
+        openActivity(activity, requestCode, build.build());
     }
 
+    @Deprecated
     public static void openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,
-        int requestCode) {
-        openActivity(activity,null, singlePhoto, limitPickPhoto, requestCode);
+            int requestCode) {
+        openActivity(activity, null, singlePhoto, limitPickPhoto, requestCode);
     }
 
+    @Deprecated
     public static void openActivity(Activity activity, boolean singlePhoto, int requestCode) {
         openActivity(activity, null, singlePhoto, 1, requestCode);
     }

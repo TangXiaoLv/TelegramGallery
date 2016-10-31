@@ -38,6 +38,7 @@ import java.util.List;
 public class PhotoAlbumPickerActivity extends BaseFragment
         implements NotificationCenter.NotificationCenterDelegate {
 
+
     public interface PhotoAlbumPickerActivityDelegate {
         void didSelectPhotos(ArrayList<String> photos, ArrayList<String> captions);
 
@@ -47,6 +48,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     }
 
     public static int limitPickPhoto;
+    public static String sHintOfPick;
     public static boolean DarkTheme = true;
 
     private ArrayList<MediaController.AlbumEntry> albumsSorted = null;
@@ -78,10 +80,14 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     private final static int item_photos = 2;
     private final static int item_video = 3;
 
-    public PhotoAlbumPickerActivity(String[] filterMimeTypes, int limitPick, boolean singlePhoto,
-            boolean allowGifs) {
+    public PhotoAlbumPickerActivity(String[] filterMimeTypes,
+                                    int limitPick,
+                                    boolean singlePhoto,
+                                    String hintOfPick,
+                                    boolean allowGifs) {
         super();
         limitPickPhoto = limitPick;
+        sHintOfPick = hintOfPick;
         this.filterMimeTypes = filterMimeTypes;
         this.imageCheckIndexArr = new int[limitPick];
         this.singlePhoto = singlePhoto;

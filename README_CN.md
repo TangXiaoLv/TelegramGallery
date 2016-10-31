@@ -9,7 +9,7 @@
 ###Gradle
 ```
 dependencies {
-    compile 'com.library.tangxiaolv:telegramgallery:1.0.1'
+    compile 'com.library.tangxiaolv:telegramgallery:1.0.2'
 }
 ```
 
@@ -23,19 +23,13 @@ dependencies {
 ###Usage
 ```
 //打开相册
-方式一：
-GalleryActivity.openActivity(
-            Activity activity,
-            String[] filterMimeTypes,//过滤掉指定类型，遵守MIME Type类型规范。eg：new String[]{"image/gif","image/png"}
-            boolean singlePhoto,//true 单选，false 多选
-            int limitPickPhoto,//图片可选数量限制，当singlePhoto=false时生效
-            int requestCode)//请求码
-
-方式二：
-GalleryActivity.openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,int requestCode)
-
-方式三：
-GalleryActivity.openActivity(Activity activity, boolean singlePhoto, int requestCode)
+//open album
+GalleryConfig config = new GalleryConfig.Build()
+                        .limitPickPhoto(3)
+                        .singlePhoto(false)
+                        .hintOfPick("this is pick hint")
+                        .filterMimeTypes(new String[]{"image/jpeg"})
+                        .build();
 
 //接受返回值
 @Override

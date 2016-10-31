@@ -9,7 +9,7 @@ Fast，efficiently，low memory selector of album,extract from [Telegram](https:
 ###Gradle
 ```
 dependencies {
-    compile 'com.library.tangxiaolv:telegramgallery:1.0.1'
+    compile 'com.library.tangxiaolv:telegramgallery:1.0.2'
 }
 ```
 
@@ -23,21 +23,12 @@ dependencies {
 ###Usage
 ```
 //open album
-GalleryActivity.openActivity(
-            Activity activity,
-            //Filter the specified type， Follow the rule of standard of mime type 。eg：new String[]{"image/gif","image/png"}
-            String[] filterMimeTypes,
-            //true：singleSelection，false： Multiselect
-            boolean singlePhoto,
-            //limit for pick photo nums，when singlePhoto=false,the param is available
-            int limitPickPhoto,
-            int requestCode)
-
-//or
-GalleryActivity.openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,int requestCode)
-
-//or
-GalleryActivity.openActivity(Activity activity, boolean singlePhoto, int requestCode)
+GalleryConfig config = new GalleryConfig.Build()
+                        .limitPickPhoto(3)
+                        .singlePhoto(false)
+                        .hintOfPick("this is pick hint")
+                        .filterMimeTypes(new String[]{"image/jpeg"})
+                        .build();
 
 //process result
 @Override

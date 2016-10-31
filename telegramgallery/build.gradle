@@ -1,11 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
-
 tasks.withType(Javadoc) {
     enabled = false //禁用生成javadoc的任务
     options.encoding = "UTF-8"
 }
-
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'telegramgallery' //maven 仓库中的包名
@@ -19,7 +17,7 @@ ext {
     siteUrl = 'https://github.com/TangXiaoLv/TelegramGallery'
     gitUrl = 'https://github.com/TangXiaoLv/TelegramGallery.git'
 
-    libraryVersion = '1.0.1'
+    libraryVersion = '1.0.2'
 
     developerId = 'tangxiaolv'
     developerName = 'Tang XiaoLv'
@@ -29,10 +27,9 @@ ext {
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
     allLicenses = ["Apache-2.0"]
 }
-
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '23.0.3'
 
     defaultConfig {
         minSdkVersion 14
@@ -47,7 +44,6 @@ android {
         }
     }
 }
-
 // Place it at the end of the file
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

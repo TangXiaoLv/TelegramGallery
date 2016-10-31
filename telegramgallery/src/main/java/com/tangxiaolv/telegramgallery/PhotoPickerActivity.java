@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.DarkTheme;
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.sHintOfPick;
 
 public class PhotoPickerActivity extends BaseFragment
         implements NotificationCenter.NotificationCenterDelegate, PhotoViewer.PhotoViewerProvider {
@@ -142,7 +144,8 @@ public class PhotoPickerActivity extends BaseFragment
         ActionBarMenu menu = actionBar.createMenu();
 
         TextView cancel = new TextView(context);
-        LinearLayout.LayoutParams cancelParams = LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, -1);
+        LinearLayout.LayoutParams cancelParams = LayoutHelper
+                .createLinear(LayoutHelper.WRAP_CONTENT, -1);
         cancel.setTextSize(18);
         cancel.setText(LocaleController.getString("Cancel", R.string.Cancel));
         cancel.setTextColor(0xffffffff);
@@ -621,7 +624,7 @@ public class PhotoPickerActivity extends BaseFragment
 
             if (index != -1) {
                 setPhotoChecked(index);
-            }else{
+            } else {
                 MediaController.PhotoEntry existEntry = selectedPhotos.get(imageId);
                 if (existEntry != null) {
                     existEntry.sortindex = -1;
@@ -846,9 +849,12 @@ public class PhotoPickerActivity extends BaseFragment
                                     photoEntry.sortindex = cornerIndex;
                                     delegate.putCheckboxTag(photoEntry.imageId, cornerIndex);
                                 } else {
-                                    AndroidUtilities.showToast(
-                                            String.format(Gallery.applicationContext.getString(
-                                                    R.string.MostSelect), limitPickPhoto));
+                                    String hintOfPick = sHintOfPick;
+                                    String defHint = String.format(Gallery.applicationContext
+                                            .getString(R.string.MostSelect), limitPickPhoto);
+                                    hintOfPick = TextUtils.isEmpty(hintOfPick) ? defHint
+                                            : sHintOfPick;
+                                    AndroidUtilities.showToast(hintOfPick);
                                 }
 
                                 if (selectedPhotos.size() <= limitPickPhoto) {
