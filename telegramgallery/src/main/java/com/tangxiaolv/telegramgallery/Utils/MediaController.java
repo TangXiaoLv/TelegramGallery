@@ -65,7 +65,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.DATE_TAKEN,
             MediaStore.Images.Media.ORIENTATION
-//             MediaStore.Files.FileColumns.MIME_TYPE
+            // MediaStore.Files.FileColumns.MIME_TYPE
     };
 
     private static final String[] projectionVideo = {
@@ -572,7 +572,8 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                 .getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                         int orientationColumn = cursor
                                 .getColumnIndex(MediaStore.Images.Media.ORIENTATION);
-//                         int mimeTypeColumn = cursor.getColumnIndex(MediaStore.Files.FileColumns.MIME_TYPE);
+                        // int mimeTypeColumn =
+                        // cursor.getColumnIndex(MediaStore.Files.FileColumns.MIME_TYPE);
 
                         while (cursor.moveToNext()) {
                             int imageId = cursor.getInt(imageIdColumn);
@@ -581,7 +582,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                             String path = cursor.getString(dataColumn);
                             long dateTaken = cursor.getLong(dateColumn);
                             int orientation = cursor.getInt(orientationColumn);
-//                             String mimeType = cursor.getString(mimeTypeColumn);
+                            // String mimeType = cursor.getString(mimeTypeColumn);
 
                             if (path == null || path.length() == 0) {
                                 continue;
@@ -635,10 +636,13 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     albums.clear();
                     cursor = null;
                     AlbumEntry allVideosAlbum = null;
-                     cursor = MediaStore.Images.Media.query(
-                     Gallery.applicationContext.getContentResolver(),
-                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null,
-                     null, MediaStore.Video.Media.DATE_TAKEN + " DESC");
+                    cursor = MediaStore.Images.Media.query(
+                            Gallery.applicationContext.getContentResolver(),
+                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                            projectionVideo,
+                            selectionBuilder.toString(),
+                            filterMimiType,
+                            MediaStore.Video.Media.DATE_TAKEN + " DESC");
                     if (cursor != null) {
                         int imageIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID);
                         int bucketIdColumn = cursor

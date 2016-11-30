@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 GalleryConfig config = new GalleryConfig.Build()
                         .limitPickPhoto(3)
                         .singlePhoto(false)
-//                        .hintOfPick("this is pick hint")
-//                        .filterMimeTypes(new String[]{"image/jpeg"})
+                        .hintOfPick("this is pick hint")
+                        .filterMimeTypes(new String[]{})
                         .build();
                 GalleryActivity.openActivity(MainActivity.this, reqCode, config);
             }
