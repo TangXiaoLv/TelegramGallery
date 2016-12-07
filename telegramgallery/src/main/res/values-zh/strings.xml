@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="PickerPhotos">图片</string>
+    <string name="PickerVideo">视频</string>
+    <string name="AllPhotos">所有图片</string>
+    <string name="AllVideo">所有视频</string>
+    <string name="NoPhotos">还没有图片</string>
+    <string name="NoVideo">还没有视频</string>
+    <string name="Crop">剪切</string>
+    <string name="AttachPhoto">图片</string>
+    <string name="Of">%1$d / %2$d</string>
+    <string name="Set">设置</string>
+    <string name="Album">相册</string>
+
+    <string name="MostSelect">你最多只能选择%d张图片</string>
+
+    <string name="Send">完成</string>
+    <string name="Cancel">取消</string>
+    <string name="Preview">预览</string>
+    <string name="album_read_fail">相册读取失败,请检查权限</string>
+</resources>
