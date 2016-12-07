@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">TelegramGallery</string>
-
+    <string name="app_name"></string>
     <string name="PickerPhotos">Photos</string>
     <string name="PickerVideo">Video</string>
     <string name="AllPhotos">All Photos</string>
@@ -32,4 +31,5 @@
     <string name="Cancel">Cancel</string>
     <string name="Preview">Preview</string>
     <string name="album_read_fail">Failed to read an album, please check permissions</string>
+    <string name="done">done</string>
 </resources>
