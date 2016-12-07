@@ -158,11 +158,6 @@ public class PhotoAlbumPickerActivity extends BaseFragment
 
             ActionBarMenu menu = actionBar.createMenu();
             dropDownContainer = new ActionBarMenuItem(context, menu, 0);
-            dropDownContainer.setSubMenuOpenSide(1);
-            dropDownContainer.addSubItem(item_photos,
-                    LocaleController.getString("PickerPhotos", R.string.PickerPhotos), 0);
-            dropDownContainer.addSubItem(item_video,
-                    LocaleController.getString("PickerVideo", R.string.PickerVideo), 0);
             actionBar.addView(dropDownContainer);
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
                     .getLayoutParams();
@@ -172,13 +167,6 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             // layoutParams.leftMargin = AndroidUtilities.getRealScreenSize().x / 2;
             layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
             dropDownContainer.setLayoutParams(layoutParams);
-            dropDownContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dropDownContainer.toggleSubMenu();
-                }
-            });
-
             dropDown = new TextView(context);
             dropDown.setGravity(Gravity.LEFT);
             dropDown.setSingleLine(true);
@@ -186,17 +174,11 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             dropDown.setMaxLines(1);
             dropDown.setEllipsize(TextUtils.TruncateAt.END);
             dropDown.setTextColor(0xffffffff);
-            // dropDown.getPaint().setFakeBoldText(true);
-            dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down,
-                    0);
-            dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
-//            dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
             dropDown.setText(LocaleController.getString("PickerPhotos", R.string.PickerPhotos));
             dropDownContainer.addView(dropDown);
             layoutParams = (FrameLayout.LayoutParams) dropDown.getLayoutParams();
             layoutParams.width = LayoutHelper.WRAP_CONTENT;
             layoutParams.height = LayoutHelper.WRAP_CONTENT;
-//            layoutParams.leftMargin = AndroidUtilities.dp(dropDown.getTextSize());
             layoutParams.gravity = Gravity.CENTER_VERTICAL;
             dropDown.setLayoutParams(layoutParams);
         } else {

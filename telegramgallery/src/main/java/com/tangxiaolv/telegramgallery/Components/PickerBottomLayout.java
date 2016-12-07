@@ -74,7 +74,7 @@ public class PickerBottomLayout extends FrameLayout {
         doneButtonTextView.setTextColor(isDarkTheme ? 0xffffffff : 0xff007aff);
         doneButtonTextView.setGravity(Gravity.CENTER);
         doneButtonTextView.setCompoundDrawablePadding(AndroidUtilities.dp(8));
-        doneButtonTextView.setText(LocaleController.getString("Send", R.string.Send).toUpperCase());
+        doneButtonTextView.setText(LocaleController.getString("Send", R.string.done).toUpperCase());
         // doneButtonTextView.getPaint().setFakeBoldText(true);
         doneButton.addView(doneButtonTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT,
                 LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));

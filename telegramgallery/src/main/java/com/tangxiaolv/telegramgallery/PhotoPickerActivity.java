@@ -225,10 +225,17 @@ public class PhotoPickerActivity extends BaseFragment
                     if (searchItem != null) {
                         AndroidUtilities.hideKeyboard(searchItem.getSearchField());
                     }
-                    PhotoViewer.getInstance().setParentActivity(getParentActivity());
-                    PhotoViewer.getInstance().openPhotoForSelect(arrayList, false, i,
-                            singlePhoto ? 1 : 0,
-                            PhotoPickerActivity.this);
+                    if (singlePhoto) {
+                        // Open photo
+                        PhotoViewer.getInstance().setParentActivity(getParentActivity());
+                        PhotoViewer.getInstance().openPhotoForSelect(arrayList, false, i,
+                            1, PhotoPickerActivity.this);
+                    } else {
+                        // Select photo
+                        if (view instanceof PhotoPickerPhotoCell) {
+                            ((PhotoPickerPhotoCell) view).checkFrame.performClick();
+                        }
+                    }
                 }
             }
         });

@@ -49,7 +49,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
-import android.view.ActionMode;
 import android.view.ContextThemeWrapper;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -1738,7 +1737,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         sendPhotoType = type;
         if (pickerView != null) {
             pickerView.doneButtonTextView
-                    .setText(LocaleController.getString("Send", R.string.Send).toUpperCase());
+                    .setText(LocaleController.getString("Send", R.string.select).toUpperCase());
         }
         openPhoto(null, photos, index, provider, 0, 0);
     }
