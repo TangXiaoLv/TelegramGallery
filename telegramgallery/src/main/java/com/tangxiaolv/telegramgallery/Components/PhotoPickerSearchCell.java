@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
 import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
 import com.tangxiaolv.telegramgallery.R;
 
 public class PhotoPickerSearchCell extends LinearLayout {
@@ -78,8 +77,8 @@ public class PhotoPickerSearchCell extends LinearLayout {
         setOrientation(HORIZONTAL);
 
         SearchButton searchButton = new SearchButton(context);
-        searchButton.textView1.setText(LocaleController.getString("SearchImages", R.string.SearchImages));
-        searchButton.textView2.setText(LocaleController.getString("SearchImagesInfo", R.string.SearchImagesInfo));
+        searchButton.textView1.setText(R.string.SearchImages);
+        searchButton.textView2.setText(R.string.SearchImagesInfo);
         searchButton.imageView.setImageResource(R.drawable.search_web);
         addView(searchButton);
         LayoutParams layoutParams = (LayoutParams) searchButton.getLayoutParams();
@@ -107,7 +106,7 @@ public class PhotoPickerSearchCell extends LinearLayout {
         frameLayout.setLayoutParams(layoutParams);
 
         searchButton = new SearchButton(context);
-        searchButton.textView1.setText(LocaleController.getString("SearchGifs", R.string.SearchGifs));
+        searchButton.textView1.setText(R.string.SearchGifs);
         searchButton.textView2.setText("GIPHY");
         searchButton.imageView.setImageResource(R.drawable.search_gif);
         addView(searchButton);

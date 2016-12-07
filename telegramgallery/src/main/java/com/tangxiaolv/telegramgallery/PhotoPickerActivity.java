@@ -34,7 +34,6 @@ import com.tangxiaolv.telegramgallery.TL.FileLocation;
 import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
 import com.tangxiaolv.telegramgallery.Utils.FileLoader;
 import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
 import com.tangxiaolv.telegramgallery.Utils.MediaController;
 import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
 
@@ -147,7 +146,7 @@ public class PhotoPickerActivity extends BaseFragment
         LinearLayout.LayoutParams cancelParams = LayoutHelper
                 .createLinear(LayoutHelper.WRAP_CONTENT, -1);
         cancel.setTextSize(18);
-        cancel.setText(LocaleController.getString("Cancel", R.string.Cancel));
+        cancel.setText(R.string.Cancel);
         cancel.setTextColor(0xffffffff);
         cancel.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         cancelParams.setMargins(0, 0, AndroidUtilities.dp(8), 0);
@@ -163,11 +162,10 @@ public class PhotoPickerActivity extends BaseFragment
 
         if (selectedAlbum == null) {
             if (type == 0) {
-                searchItem.getSearchField().setHint(LocaleController.getString("SearchImagesTitle",
-                        R.string.SearchImagesTitle));
+                searchItem.getSearchField().setHint(R.string.SearchImagesTitle);
             } else if (type == 1) {
                 searchItem.getSearchField().setHint(
-                        LocaleController.getString("SearchGifsTitle", R.string.SearchGifsTitle));
+                        R.string.SearchGifsTitle);
             }
         }
 
@@ -240,11 +238,11 @@ public class PhotoPickerActivity extends BaseFragment
                         long id) {
                     if (searchResult.isEmpty() && lastSearchString == null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                        builder.setTitle(LocaleController.getString("AppName", R.string.app_name));
-                        builder.setMessage(
-                                LocaleController.getString("ClearSearch", R.string.ClearSearch));
-                        builder.setPositiveButton(LocaleController
-                                .getString("ClearButton", R.string.ClearButton).toUpperCase(),
+                        builder.setTitle(R.string.app_name)
+                        .setMessage(
+                                R.string.ClearSearch)
+                        .setPositiveButton(
+                                R.string.ClearButton,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -253,9 +251,9 @@ public class PhotoPickerActivity extends BaseFragment
                                             listAdapter.notifyDataSetChanged();
                                         }
                                     }
-                                });
-                        builder.setNegativeButton(
-                                LocaleController.getString("Cancel", R.string.Cancel), null);
+                                })
+                        .setNegativeButton(
+                                R.string.Cancel, null);
                         showDialog(builder.create());
                         return true;
                     }
@@ -270,14 +268,14 @@ public class PhotoPickerActivity extends BaseFragment
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setVisibility(View.GONE);
         if (selectedAlbum != null) {
-            emptyView.setText(LocaleController.getString("NoPhotos", R.string.NoPhotos));
+            emptyView.setText(R.string.NoPhotos);
         } else {
             if (type == 0) {
                 emptyView.setText(
-                        LocaleController.getString("NoRecentPhotos", R.string.NoRecentPhotos));
+                        R.string.NoRecentPhotos);
             } else if (type == 1) {
                 emptyView
-                        .setText(LocaleController.getString("NoRecentGIFs", R.string.NoRecentGIFs));
+                        .setText(R.string.NoRecentGIFs);
             }
         }
         frameLayout.addView(emptyView);
