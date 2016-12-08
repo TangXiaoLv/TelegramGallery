@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -66,8 +67,12 @@ public class PickerBottomLayout extends FrameLayout {
                 isDarkTheme ? R.drawable.photobadge_new : R.drawable.photobadge_new);
         doneButtonBadgeTextView.setPadding(AndroidUtilities.dp(8), 0, AndroidUtilities.dp(8),
                 AndroidUtilities.dp(1));
-        doneButton.addView(doneButtonBadgeTextView,
-                LayoutHelper.createLinear(26, 26, Gravity.CENTER_VERTICAL, 0, 0, 10, 0));
+        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER_VERTICAL;
+        layoutParams.rightMargin = AndroidUtilities.dp(8);
+        doneButton.addView(doneButtonBadgeTextView, layoutParams);
 
         doneButtonTextView = new TextView(context);
         doneButtonTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
