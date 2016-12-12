@@ -17,7 +17,7 @@ ext {
     siteUrl = 'https://github.com/TangXiaoLv/TelegramGallery'
     gitUrl = 'https://github.com/TangXiaoLv/TelegramGallery.git'
 
-    libraryVersion = '1.0.2'
+    libraryVersion = '1.0.2-fork'
 
     developerId = 'tangxiaolv'
     developerName = 'Tang XiaoLv'
