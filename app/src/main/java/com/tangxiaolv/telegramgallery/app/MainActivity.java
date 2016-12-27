@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 GalleryConfig config = new GalleryConfig.Build()
-                        .limitPickPhoto(3)
+                        .limitPickPhoto(11)
                         .singlePhoto(false)
                         .hintOfPick("this is pick hint")
                         .filterMimeTypes(new String[]{})

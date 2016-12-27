@@ -3,6 +3,7 @@ package com.tangxiaolv.telegramgallery;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.DarkTheme;
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.maxSelectionReached;
 import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.sHintOfPick;
 
 public class PhotoPickerActivity extends BaseFragment
@@ -225,10 +227,17 @@ public class PhotoPickerActivity extends BaseFragment
                     if (searchItem != null) {
                         AndroidUtilities.hideKeyboard(searchItem.getSearchField());
                     }
-                    PhotoViewer.getInstance().setParentActivity(getParentActivity());
-                    PhotoViewer.getInstance().openPhotoForSelect(arrayList, false, i,
-                            singlePhoto ? 1 : 0,
-                            PhotoPickerActivity.this);
+                    if (singlePhoto) {
+                        // Open photo
+                        PhotoViewer.getInstance().setParentActivity(getParentActivity());
+                        PhotoViewer.getInstance().openPhotoForSelect(arrayList, false, i,
+                            1, PhotoPickerActivity.this);
+                    } else {
+                        // Select photo
+                        if (view instanceof PhotoPickerPhotoCell) {
+                            ((PhotoPickerPhotoCell) view).checkFrame.performClick();
+                        }
+                    }
                 }
             }
         });
@@ -849,12 +858,21 @@ public class PhotoPickerActivity extends BaseFragment
                                     photoEntry.sortindex = cornerIndex;
                                     delegate.putCheckboxTag(photoEntry.imageId, cornerIndex);
                                 } else {
-                                    String hintOfPick = sHintOfPick;
-                                    String defHint = String.format(Gallery.applicationContext
+                                    if (maxSelectionReached != null) {
+                                        try {
+                                            maxSelectionReached.send();
+                                        } catch (PendingIntent.CanceledException e) {
+                                            throw new IllegalStateException(
+                                                "PendingIntent was canceled", e);
+                                        }
+                                    } else {
+                                        String hintOfPick = sHintOfPick;
+                                        String defHint = String.format(Gallery.applicationContext
                                             .getString(R.string.MostSelect), limitPickPhoto);
-                                    hintOfPick = TextUtils.isEmpty(hintOfPick) ? defHint
+                                        hintOfPick = TextUtils.isEmpty(hintOfPick) ? defHint
                                             : sHintOfPick;
-                                    AndroidUtilities.showToast(hintOfPick);
+                                        AndroidUtilities.showToast(hintOfPick);
+                                    }
                                 }
 
                                 if (selectedPhotos.size() <= limitPickPhoto) {
