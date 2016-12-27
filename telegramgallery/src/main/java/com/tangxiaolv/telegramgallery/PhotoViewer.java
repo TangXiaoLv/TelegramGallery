@@ -1,39 +1,13 @@
 
 package com.tangxiaolv.telegramgallery;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
-import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
-import com.tangxiaolv.telegramgallery.Components.AspectRatioFrameLayout;
-import com.tangxiaolv.telegramgallery.Components.CheckBox;
-import com.tangxiaolv.telegramgallery.Components.ClippingImageView;
-import com.tangxiaolv.telegramgallery.Components.PhotoCropView;
-import com.tangxiaolv.telegramgallery.Components.PickerBottomLayout;
-import com.tangxiaolv.telegramgallery.Components.SizeNotifierFrameLayoutPhoto;
-import com.tangxiaolv.telegramgallery.TL.Document;
-import com.tangxiaolv.telegramgallery.TL.FileLocation;
-import com.tangxiaolv.telegramgallery.TL.Photo;
-import com.tangxiaolv.telegramgallery.TL.PhotoSize;
-import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
-import com.tangxiaolv.telegramgallery.Utils.FileLoader;
-import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
-import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
-import com.tangxiaolv.telegramgallery.Utils.MediaController;
-import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
-import com.tangxiaolv.telegramgallery.Utils.Utilities;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -66,7 +40,35 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
+import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
+import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
+import com.tangxiaolv.telegramgallery.Components.AspectRatioFrameLayout;
+import com.tangxiaolv.telegramgallery.Components.CheckBox;
+import com.tangxiaolv.telegramgallery.Components.ClippingImageView;
+import com.tangxiaolv.telegramgallery.Components.PhotoCropView;
+import com.tangxiaolv.telegramgallery.Components.PickerBottomLayout;
+import com.tangxiaolv.telegramgallery.Components.SizeNotifierFrameLayoutPhoto;
+import com.tangxiaolv.telegramgallery.TL.Document;
+import com.tangxiaolv.telegramgallery.TL.FileLocation;
+import com.tangxiaolv.telegramgallery.TL.Photo;
+import com.tangxiaolv.telegramgallery.TL.PhotoSize;
+import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
+import com.tangxiaolv.telegramgallery.Utils.FileLoader;
+import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
+import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
+import com.tangxiaolv.telegramgallery.Utils.LocaleController;
+import com.tangxiaolv.telegramgallery.Utils.MediaController;
+import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
+import com.tangxiaolv.telegramgallery.Utils.Utilities;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.limitPickPhoto;
+import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.maxSelectionReached;
 import static com.tangxiaolv.telegramgallery.PhotoAlbumPickerActivity.sHintOfPick;
 
 @SuppressWarnings("unchecked")
@@ -798,12 +800,21 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     if (placeProvider.checkboxEnable()) {
                         int checkeCorner = placeProvider.getCheckeCorner(currentIndex);
                         if (-1 == checkeCorner && !checkImageView.isChecked()) {
-                            String hintOfPick = sHintOfPick;
-                            String defHint = String.format(Gallery.applicationContext
+                            if (maxSelectionReached != null) {
+                                try {
+                                    maxSelectionReached.send();
+                                } catch (PendingIntent.CanceledException e) {
+                                    throw new IllegalStateException(
+                                        "PendingIntent was canceled", e);
+                                }
+                            } else {
+                                String hintOfPick = sHintOfPick;
+                                String defHint = String.format(Gallery.applicationContext
                                     .getString(R.string.MostSelect), limitPickPhoto);
-                            hintOfPick = TextUtils.isEmpty(hintOfPick) ? defHint
+                                hintOfPick = TextUtils.isEmpty(hintOfPick) ? defHint
                                     : sHintOfPick;
-                            AndroidUtilities.showToast(hintOfPick);
+                                AndroidUtilities.showToast(hintOfPick);
+                            }
                         }
 
                         checkImageView.setChecked(checkeCorner,
