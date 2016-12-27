@@ -2,6 +2,7 @@
 package com.tangxiaolv.telegramgallery;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -48,6 +49,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
 
     public static int limitPickPhoto;
     public static String sHintOfPick;
+    public static PendingIntent maxSelectionReached;
     public static boolean DarkTheme = true;
 
     private ArrayList<MediaController.AlbumEntry> albumsSorted = null;
@@ -83,7 +85,8 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                                     int limitPick,
                                     boolean singlePhoto,
                                     String hintOfPick,
-                                    boolean allowGifs) {
+                                    boolean allowGifs,
+                                    PendingIntent maxSelectionReached) {
         super();
         limitPickPhoto = limitPick;
         sHintOfPick = hintOfPick;
@@ -91,6 +94,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         this.imageCheckIndexArr = new int[limitPick];
         this.singlePhoto = singlePhoto;
         this.allowGifs = allowGifs;
+        this.maxSelectionReached = maxSelectionReached;
     }
 
     @Override

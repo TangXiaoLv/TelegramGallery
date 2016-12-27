@@ -1,6 +1,7 @@
 
 package com.tangxiaolv.telegramgallery;
 
+import android.app.PendingIntent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,17 +14,19 @@ public class GalleryConfig implements Parcelable {
     private String hintOfPick;
     private boolean singlePhoto;
     private int limitPickPhoto;
+    private PendingIntent limitReachedIntent;
 
     private GalleryConfig(){
 
     }
 
     private GalleryConfig(String[] filterMimeTypes, String hintOfPick, boolean singlePhoto,
-                          int limitPickPhoto) {
+                          int limitPickPhoto, PendingIntent limitReachedIntent) {
         this.filterMimeTypes = filterMimeTypes;
         this.hintOfPick = hintOfPick;
         this.singlePhoto = singlePhoto;
         this.limitPickPhoto = limitPickPhoto;
+        this.limitReachedIntent = limitReachedIntent;
     }
 
     public String[] getFilterMimeTypes() {
@@ -42,11 +45,16 @@ public class GalleryConfig implements Parcelable {
         return limitPickPhoto;
     }
 
+    public PendingIntent getLimitReachedIntent() {
+        return limitReachedIntent;
+    }
+
     public static class Build {
         private String[] filterMimeTypes;
         private String hintOfPick;
         private boolean singlePhoto = false;
         private int limitPickPhoto = 9;
+        private PendingIntent multiPhotoSelectedPendingIntent = null;
 
         /**
          * @param filterMimeTypes filter of media type， based on MimeType standards：
@@ -82,13 +90,29 @@ public class GalleryConfig implements Parcelable {
             return this;
         }
 
+        /**
+         * @param pendingIntent the pendingIntent that will be sent when user selects a picture
+         *                      and {@code limitPickPhoto} photos are already selected.
+         *                      This will be ignored if {@code singlePicture} is true. If both
+         *                      {@code hintOfPick} and pendingIntent are provided, only pendingIntent
+         *                      will be used.
+         */
+        public Build limitReachedIntent(PendingIntent pendingIntent) {
+            this.multiPhotoSelectedPendingIntent = pendingIntent;
+            return this;
+        }
+
         public GalleryConfig build() {
             this.limitPickPhoto = singlePhoto ? 1 : limitPickPhoto > 0 ? limitPickPhoto : 1;
+            if (singlePhoto) {
+                this.multiPhotoSelectedPendingIntent = null;
+            }
             return new GalleryConfig(
-                    filterMimeTypes,
-                    hintOfPick,
-                    singlePhoto,
-                    limitPickPhoto);
+                filterMimeTypes,
+                hintOfPick,
+                singlePhoto,
+                limitPickPhoto,
+                multiPhotoSelectedPendingIntent);
         }
     }
 
@@ -103,6 +127,7 @@ public class GalleryConfig implements Parcelable {
         dest.writeString(this.hintOfPick);
         dest.writeByte(this.singlePhoto ? (byte) 1 : (byte) 0);
         dest.writeInt(this.limitPickPhoto);
+        dest.writeValue(this.limitReachedIntent);
     }
 
     protected GalleryConfig(Parcel in) {
@@ -110,6 +135,8 @@ public class GalleryConfig implements Parcelable {
         this.hintOfPick = in.readString();
         this.singlePhoto = in.readByte() != 0;
         this.limitPickPhoto = in.readInt();
+        this.limitReachedIntent =
+            (PendingIntent) in.readValue(PendingIntent.class.getClassLoader());
     }
 
     public static final Creator<GalleryConfig> CREATOR = new Creator<GalleryConfig>() {

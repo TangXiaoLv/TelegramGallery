@@ -66,11 +66,12 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
         Intent intent = getIntent();
         GalleryConfig config = intent.getParcelableExtra(GALLERY_CONFIG);
         albumPickerActivity = new PhotoAlbumPickerActivity(
-                config.getFilterMimeTypes(),
-                config.getLimitPickPhoto(),
-                config.isSinglePhoto(),
-                config.getHintOfPick(),
-                false);
+            config.getFilterMimeTypes(),
+            config.getLimitPickPhoto(),
+            config.isSinglePhoto(),
+            config.getHintOfPick(),
+            false,
+            config.getLimitReachedIntent());
         albumPickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
         actionBarLayout.presentFragment(albumPickerActivity, false, true, true);
     }
