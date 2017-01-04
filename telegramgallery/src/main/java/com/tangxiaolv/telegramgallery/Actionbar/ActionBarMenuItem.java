@@ -26,7 +26,6 @@ import com.tangxiaolv.telegramgallery.R;
 import com.tangxiaolv.telegramgallery.Theme;
 import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
 import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
 
 import java.lang.reflect.Field;
 
@@ -215,7 +214,7 @@ public class ActionBarMenuItem extends FrameLayout {
         TextView textView = new TextView(getContext());
         textView.setTextColor(0xff212121);
         textView.setBackgroundResource(R.drawable.list_selector);
-        if (!LocaleController.isRTL) {
+        if (!AndroidUtilities.isRTL()) {
             textView.setGravity(Gravity.CENTER_VERTICAL);
         } else {
             textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
@@ -227,7 +226,7 @@ public class ActionBarMenuItem extends FrameLayout {
         textView.setText(text);
         if (icon != 0) {
             textView.setCompoundDrawablePadding(AndroidUtilities.dp(12));
-            if (!LocaleController.isRTL) {
+            if (!AndroidUtilities.isRTL()) {
                 textView.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(icon), null, null, null);
             } else {
                 textView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(icon), null);
@@ -236,7 +235,7 @@ public class ActionBarMenuItem extends FrameLayout {
         popupLayout.setShowedFromBotton(showFromBottom);
         popupLayout.addView(textView);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) textView.getLayoutParams();
-        if (LocaleController.isRTL) {
+        if (AndroidUtilities.isRTL()) {
             layoutParams.gravity = Gravity.RIGHT;
         }
         layoutParams.width = LayoutHelper.MATCH_PARENT;

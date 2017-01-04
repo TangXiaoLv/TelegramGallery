@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="PickerPhotos">Zdjęcia</string>
+    <string name="PickerVideo">Filmy</string>
+    <string name="AllPhotos">Wszystkie zdjęcia</string>
+    <string name="AllVideo">Wszystkie filmy</string>
+    <string name="NoPhotos">Brak zdjęć</string>
+    <string name="NoVideo">Brak filmów</string>
+    <string name="SearchImages">ZNAJDŹ ZDJĘCIA</string>
+    <string name="SearchGifs">ZNAJDŹ GIFY</string>
+    <string name="NoRecentPhotos">Brak ostatnich zdjęć</string>
+    <string name="NoRecentGIFs">Brak osatnich GIFów</string>
+    <string name="NoResult">Brak wyników</string>
+    <string name="Crop">PRZYTNIJ</string>
+    <string name="AttachPhoto">Zdjęcie</string>
+    <string name="Of">%1$d z %2$d</string>
+    <string name="Set">Zbiór</string>
+    <string name="Album">Album</string>
+
+    <string name="ClearSearch">Wyczyścić historię wyszukiwania?</string>
+    <string name="ClearButton">Wyczyść</string>
+
+    <string name="SearchImagesTitle">Przeszukaj sieć</string>
+    <string name="SearchGifsTitle">Szukaj GIFów</string>
+
+    <string name="SearchImagesInfo">SZUKAJ W SIECI</string>
+    <string name="MostSelect">Możesz wybrać do %d zdjęć</string>
+
+    <string name="Send">Akceptuj</string>
+    <string name="Cancel">Anuluj</string>
+    <string name="Preview">Podgląd</string>
+    <string name="album_read_fail">Bład odczytu, sprawdź uprawnienia</string>
+</resources>

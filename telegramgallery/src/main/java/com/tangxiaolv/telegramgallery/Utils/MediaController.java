@@ -592,8 +592,8 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                     path, orientation, false);
 
                             if (allPhotosAlbum == null) {
-                                allPhotosAlbum = new AlbumEntry(0, LocaleController.getString(
-                                        "AllPhotos", R.string.AllPhotos), photoEntry, false);
+                                allPhotosAlbum = new AlbumEntry(0, Gallery.applicationContext.getString(
+                                       R.string.AllPhotos), photoEntry, false);
                                 albumsSorted.add(0, allPhotosAlbum);
                             }
                             if (allPhotosAlbum != null) {
@@ -668,8 +668,9 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                     path, 0, true);
 
                             if (allVideosAlbum == null) {
-                                allVideosAlbum = new AlbumEntry(0, LocaleController.getString(
-                                        "AllVideo", R.string.AllVideo), photoEntry, true);
+
+                                allVideosAlbum = new AlbumEntry(0, Gallery.applicationContext.getString
+                                        (R.string.AllVideo), photoEntry, true);
                                 videoAlbumsSorted.add(0, allVideosAlbum);
                             }
                             if (allVideosAlbum != null) {

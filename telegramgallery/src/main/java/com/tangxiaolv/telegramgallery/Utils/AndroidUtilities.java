@@ -40,6 +40,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class AndroidUtilities {
@@ -317,27 +318,6 @@ public class AndroidUtilities {
             }
         }
         return photoSize;
-    }
-
-    public static String formatTTLString(int ttl) {
-        if (ttl < 60) {
-            return LocaleController.formatPluralString("Seconds", ttl);
-        } else if (ttl < 60 * 60) {
-            return LocaleController.formatPluralString("Minutes", ttl / 60);
-        } else if (ttl < 60 * 60 * 24) {
-            return LocaleController.formatPluralString("Hours", ttl / 60 / 60);
-        } else if (ttl < 60 * 60 * 24 * 7) {
-            return LocaleController.formatPluralString("Days", ttl / 60 / 60 / 24);
-        } else {
-            int days = ttl / 60 / 60 / 24;
-            if (ttl % 7 == 0) {
-                return LocaleController.formatPluralString("Weeks", days / 7);
-            } else {
-                return String.format("%s %s",
-                        LocaleController.formatPluralString("Weeks", days / 7),
-                        LocaleController.formatPluralString("Days", days % 7));
-            }
-        }
     }
 
     public static int getViewInset(View view) {
@@ -628,5 +608,11 @@ public class AndroidUtilities {
 
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isRTL() {
+        final int directionality = Character.getDirectionality(Locale.getDefault().getDisplayName().charAt(0));
+        return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
+                directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
     }
 }

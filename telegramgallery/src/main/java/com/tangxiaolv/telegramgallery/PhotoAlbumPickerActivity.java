@@ -27,7 +27,6 @@ import com.tangxiaolv.telegramgallery.Components.PhotoPickerAlbumsCell;
 import com.tangxiaolv.telegramgallery.Components.PhotoPickerSearchCell;
 import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
 import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.LocaleController;
 import com.tangxiaolv.telegramgallery.Utils.MediaController;
 import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
 
@@ -114,7 +113,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         actionBar.setBackgroundColor(Theme.ACTION_BAR_MEDIA_PICKER_COLOR);
         actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_PICKER_SELECTOR_COLOR);
         // actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setBackText(LocaleController.getString("Cancel", R.string.Cancel));
+        actionBar.setBackText(context.getString(R.string.Cancel));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -131,8 +130,8 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                     }
                     selectedMode = 0;
                     dropDown.setText(
-                            LocaleController.getString("PickerPhotos", R.string.PickerPhotos));
-                    emptyView.setText(LocaleController.getString("NoPhotos", R.string.NoPhotos));
+                            R.string.PickerPhotos);
+                    emptyView.setText(R.string.NoPhotos);
                     listAdapter.notifyDataSetChanged();
                 } else if (id == item_video) {
                     if (selectedMode == 1) {
@@ -140,8 +139,8 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                     }
                     selectedMode = 1;
                     dropDown.setText(
-                            LocaleController.getString("PickerVideo", R.string.PickerVideo));
-                    emptyView.setText(LocaleController.getString("NoVideo", R.string.NoVideo));
+                            R.string.PickerVideo);
+                    emptyView.setText(R.string.NoVideo);
                     listAdapter.notifyDataSetChanged();
                 }
             }
@@ -159,10 +158,10 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             ActionBarMenu menu = actionBar.createMenu();
             dropDownContainer = new ActionBarMenuItem(context, menu, 0);
             dropDownContainer.setSubMenuOpenSide(1);
-            dropDownContainer.addSubItem(item_photos,
-                    LocaleController.getString("PickerPhotos", R.string.PickerPhotos), 0);
-            dropDownContainer.addSubItem(item_video,
-                    LocaleController.getString("PickerVideo", R.string.PickerVideo), 0);
+            dropDownContainer.addSubItem(item_photos,context.getString(
+                    R.string.PickerPhotos), 0);
+            dropDownContainer.addSubItem(item_video,context.getString(
+                    R.string.PickerVideo), 0);
             actionBar.addView(dropDownContainer);
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
                     .getLayoutParams();
@@ -191,7 +190,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                     0);
             dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
 //            dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
-            dropDown.setText(LocaleController.getString("PickerPhotos", R.string.PickerPhotos));
+            dropDown.setText(R.string.PickerPhotos);
             dropDownContainer.addView(dropDown);
             layoutParams = (FrameLayout.LayoutParams) dropDown.getLayoutParams();
             layoutParams.width = LayoutHelper.WRAP_CONTENT;
@@ -200,7 +199,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             layoutParams.gravity = Gravity.CENTER_VERTICAL;
             dropDown.setLayoutParams(layoutParams);
         } else {
-            actionBar.setTitle(LocaleController.getString("Album", R.string.Album));
+            actionBar.setTitle(context.getString(R.string.Album));
         }
 
         listView = new ListView(context);
@@ -229,7 +228,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         emptyView.setTextSize(20);
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setVisibility(View.GONE);
-        emptyView.setText(LocaleController.getString("NoPhotos", R.string.NoPhotos));
+        emptyView.setText(R.string.NoPhotos);
         frameLayout.addView(emptyView);
         layoutParams = (FrameLayout.LayoutParams) emptyView.getLayoutParams();
         layoutParams.width = LayoutHelper.MATCH_PARENT;
