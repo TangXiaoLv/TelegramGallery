@@ -9,7 +9,7 @@
 ###Gradle
 ```
 dependencies {
-    compile 'com.library.tangxiaolv:telegramgallery:1.0.2'
+    compile 'com.library.tangxiaolv:telegramgallery:1.0.3'
 }
 ```
 

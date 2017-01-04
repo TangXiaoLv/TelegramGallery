@@ -1,23 +1,23 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 tasks.withType(Javadoc) {
-    enabled = false //禁用生成javadoc的任务
+    enabled = false //Disable the task of 'generating javadoc'
     options.encoding = "UTF-8"
 }
 ext {
     bintrayRepo = 'maven'
-    bintrayName = 'telegramgallery' //maven 仓库中的包名
+    bintrayName = 'telegramgallery' //maven package name
 
     publishedGroupId = 'com.library.tangxiaolv'
     libraryName = 'telegramgallery'
-    artifact = 'telegramgallery'//必须跟Model名一样
+    artifact = 'telegramgallery'//Must be the same as the Model name
 
     libraryDescription = 'android Gallery from Telegram'
 
     siteUrl = 'https://github.com/TangXiaoLv/TelegramGallery'
     gitUrl = 'https://github.com/TangXiaoLv/TelegramGallery.git'
 
-    libraryVersion = '1.0.2'
+    libraryVersion = '1.0.3'
 
     developerId = 'tangxiaolv'
     developerName = 'Tang XiaoLv'

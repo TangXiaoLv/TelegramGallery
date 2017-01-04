@@ -28,7 +28,7 @@
     <string name="SearchImagesInfo">WEB SEARCH</string>
     <string name="MostSelect">You can select up to %d pictures</string>
 
-    <string name="Send">Accept</string>
+    <string name="Send">Done</string>
     <string name="Cancel">Cancel</string>
     <string name="Preview">Preview</string>
     <string name="album_read_fail">Failed to read an album, please check permissions</string>

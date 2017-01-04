@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.SparseArray;
 
 import com.tangxiaolv.telegramgallery.Gallery;
 import com.tangxiaolv.telegramgallery.R;
@@ -28,6 +29,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static android.R.attr.orientation;
 
 public class MediaController implements NotificationCenter.NotificationCenterDelegate {
     public static int[] readArgs = new int[3];
@@ -64,8 +67,9 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.DATE_TAKEN,
-            MediaStore.Images.Media.ORIENTATION
-            // MediaStore.Files.FileColumns.MIME_TYPE
+            MediaStore.Images.Media.ORIENTATION,
+            MediaStore.Images.Media.SIZE
+            // MediaStore.Images.Media.MIME_TYPE
     };
 
     private static final String[] projectionVideo = {
@@ -529,7 +533,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             public void run() {
                 final ArrayList<AlbumEntry> albumsSorted = new ArrayList<>();
                 final ArrayList<AlbumEntry> videoAlbumsSorted = new ArrayList<>();
-                HashMap<Integer, AlbumEntry> albums = new HashMap<>();
+                SparseArray<AlbumEntry> albums = new SparseArray<>();
                 AlbumEntry allPhotosAlbum = null;
                 String cameraFolder = Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
@@ -572,6 +576,8 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                 .getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
                         int orientationColumn = cursor
                                 .getColumnIndex(MediaStore.Images.Media.ORIENTATION);
+                        int imageSize = cursor
+                                .getColumnIndex(MediaStore.Files.FileColumns.SIZE);
                         // int mimeTypeColumn =
                         // cursor.getColumnIndex(MediaStore.Files.FileColumns.MIME_TYPE);
 
@@ -582,9 +588,10 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                             String path = cursor.getString(dataColumn);
                             long dateTaken = cursor.getLong(dateColumn);
                             int orientation = cursor.getInt(orientationColumn);
+                            int size = cursor.getInt(imageSize);
                             // String mimeType = cursor.getString(mimeTypeColumn);
 
-                            if (path == null || path.length() == 0) {
+                            if (path == null || path.length() == 0 || size == 0) {
                                 continue;
                             }
 
