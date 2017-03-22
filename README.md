@@ -5,22 +5,22 @@ Fast，efficiently，low memory selector of album,extract from [Telegram](https:
 
 <img src="png/1.gif" height= "528" width="320">
 
-##Getting Started
-###Gradle
+## Getting Started
+### Gradle
 ```
 dependencies {
     compile 'com.library.tangxiaolv:telegramgallery:1.0.3'
 }
 ```
 
-###configuration
+### configuration
 ```
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 	<activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
 ```
-###Usage
+### Usage
 ```
 //open album
 GalleryConfig config = new GalleryConfig.Build()
@@ -42,5 +42,5 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEOS);
 }
 ```
-##License
+## License
 GPL-2.0
