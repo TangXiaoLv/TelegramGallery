@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion '23.0.3'
 
     defaultConfig {
@@ -21,5 +21,7 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile project(':telegramgallery')
+//    compile project(':telegramgallery')
+    debugCompile project(path:':telegramgallery',configuration:'debug')
+    releaseCompile project(path:':telegramgallery',configuration: 'release')
 }

@@ -23,6 +23,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
 
+    static {
+        System.loadLibrary("gly");
+    }
+
+    private static native int createDecoder(String src, int[] params);
+    private static native void destroyDecoder(int ptr);
+    private static native int getVideoFrame(int ptr, Bitmap bitmap, int[] params);
+
     private long lastFrameTime;
     private int lastTimeStamp;
     private int invalidateAfter = 50;
@@ -48,7 +56,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
     private float scaleX = 1.0f;
     private float scaleY = 1.0f;
     private boolean applyTransformation;
-    private final Rect dstRect = new Rect();
+    private final android.graphics.Rect dstRect = new android.graphics.Rect();
     private static final Handler uiHandler = new Handler(Looper.getMainLooper());
     private volatile boolean isRunning;
     private volatile boolean isRecycled;
@@ -73,6 +81,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
         @Override
         public void run() {
             if (destroyWhenDone && nativePtr != 0) {
+                destroyDecoder(nativePtr);
                 nativePtr = 0;
             }
             if (nativePtr == 0) {
@@ -105,6 +114,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
         public void run() {
             if (!isRecycled) {
                 if (!decoderCreated && nativePtr == 0) {
+                    nativePtr = createDecoder(path.getAbsolutePath(), metaData);
                     decoderCreated = true;
                 }
                 try {
@@ -117,6 +127,9 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
                         if (backgroundShader == null && backgroundBitmap != null && roundRadius != 0) {
                             backgroundShader = new BitmapShader(backgroundBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
                         }
+                    }
+                    if (backgroundBitmap != null) {
+                        getVideoFrame(nativePtr, backgroundBitmap, metaData);
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -140,6 +153,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
     public AnimatedFileDrawable(File file, boolean createDecoder) {
         path = file;
         if (createDecoder) {
+            nativePtr = createDecoder(file.getAbsolutePath(), metaData);
             decoderCreated = true;
         }
     }
@@ -168,6 +182,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
         isRecycled = true;
         if (loadFrameTask == null) {
             if (nativePtr != 0) {
+                destroyDecoder(nativePtr);
                 nativePtr = 0;
             }
             if (nextRenderingBitmap != null) {

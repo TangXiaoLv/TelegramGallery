@@ -28,7 +28,7 @@ ext {
     allLicenses = ["Apache-2.0"]
 }
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion '23.0.3'
 
     defaultConfig {
@@ -36,6 +36,18 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        ndk {
+            abiFilters 'armeabi'//,'x86'//, 'armeabi-v7a'//, 'x86'//, 'x86_6 4', 'arm64-v8a'
+        }
+
+        externalNativeBuild {
+            cmake {
+                cFlags "-std=c99"
+                cppFlags "-std=c++11 -frtti -fexceptions"
+                arguments "-DANDROID_STL=gnustl_static"
+            }
+        }
     }
     buildTypes {
         release {
@@ -43,7 +55,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    publishNonDefault true
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
 }
 // Place it at the end of the file
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+dependencies {
+}
