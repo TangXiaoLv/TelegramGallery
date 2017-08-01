@@ -96,7 +96,6 @@ public class AndroidUtilities {
         checkDisplaySize();
     }
 
-    public static int statusBarHeights;
     static {
         int resourceId = Gallery.applicationContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
