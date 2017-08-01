@@ -15,10 +15,10 @@ dependencies {
 
 ### configuration
 ```
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
-	<activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
+    
+    <activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
 ```
 ### Usage
 ```
@@ -34,12 +34,11 @@ GalleryActivity.openActivity(MainActivity.this, reqCode, config);
 //process result
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-	//list of photos of seleced
+    //list of photos of seleced
     List<String> photos = (List<String>) data.getSerializableExtra(GalleryActivity.PHOTOS);
-
-	//list of videos of seleced
-	List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEOS);
+    
+    //list of videos of seleced
+    List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEOS);
 }
 ```
 ## License

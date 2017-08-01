@@ -15,10 +15,10 @@ dependencies {
 
 ### configuration
 ```
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
-	<activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
+    
+    <activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
 ```
 ### Usage
 ```
@@ -38,8 +38,8 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	//照片路径集合返回值
     List<String> photos = (List<String>) data.getSerializableExtra(GalleryActivity.PHOTOS);
 
-	//视频路径集合返回值
-	List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEOS);
+    //视频路径集合返回值
+    List<String> vides = (List<String>) data.getSerializableExtra(GalleryActivity.VIDEOS);
 }
 ```
 ## License
