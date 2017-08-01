@@ -540,9 +540,8 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         .getAbsolutePath() + "/" + "Camera/";
 
                 // 相当于我们常用sql where 后面的写法
-                StringBuilder selectionBuilder = null;
+                StringBuilder selectionBuilder = new StringBuilder();
                 if (filterMimiType != null && filterMimiType.length > 0) {
-                    selectionBuilder = new StringBuilder();
                     int length = filterMimiType.length;
                     for (int i = 0; i < length; i++) {
                         String mimeType = MediaStore.Files.FileColumns.MIME_TYPE;

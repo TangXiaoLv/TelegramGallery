@@ -80,9 +80,9 @@ public class AndroidUtilities {
                             + "(?:" + DOMAIN_NAME + ")"
                             + "(?:\\:\\d{1,5})?)" // plus option port number
                             + "(\\/(?:(?:[" + GOOD_IRI_CHAR + "\\;\\/\\?\\:\\@\\&\\=\\#\\~" // plus
-                                                                                            // option
-                                                                                            // query
-                                                                                            // params
+                            // option
+                            // query
+                            // params
                             + "\\-\\.\\+\\!\\*\\'\\(\\)\\,\\_])|(?:\\%[a-fA-F0-9]{2}))*)?"
                             + "(?:\\b|$)");
         } catch (Exception e) {
@@ -96,27 +96,18 @@ public class AndroidUtilities {
         checkDisplaySize();
     }
 
-    public static Typeface getTypeface(String assetPath) {
-        synchronized (typefaceCache) {
-            if (!typefaceCache.containsKey(assetPath)) {
-                try {
-                    Typeface t = Typeface.createFromAsset(
-                            Gallery.applicationContext.getAssets(), assetPath);
-                    typefaceCache.put(assetPath, t);
-                } catch (Exception e) {
-                    Log.e("Typefaces",
-                            "Could not get typeface '" + assetPath + "' because " + e.getMessage());
-                    return null;
-                }
-            }
-            return typefaceCache.get(assetPath);
+    public static int statusBarHeights;
+    static {
+        int resourceId = Gallery.applicationContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = Gallery.applicationContext.getResources().getDimensionPixelSize(resourceId);
         }
     }
 
-    public static void showToast(String text){
-        if (toast == null){
-            toast = Toast.makeText(Gallery.applicationContext,text,Toast.LENGTH_SHORT);
-        }else{
+    public static void showToast(String text) {
+        if (toast == null) {
+            toast = Toast.makeText(Gallery.applicationContext, text, Toast.LENGTH_SHORT);
+        } else {
             toast.setText(text);
         }
         toast.show();
@@ -133,20 +124,6 @@ public class AndroidUtilities {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean isKeyboardShowed(View view) {
-        if (view == null) {
-            return false;
-        }
-        try {
-            InputMethodManager inputManager = (InputMethodManager) view.getContext()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE);
-            return inputManager.isActive(view);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     public static void hideKeyboard(View view) {
@@ -549,7 +526,7 @@ public class AndroidUtilities {
                     }
 
                     final String selection = "_id=?";
-                    final String[] selectionArgs = new String[] {
+                    final String[] selectionArgs = new String[]{
                             split[1]
                     };
 
@@ -568,7 +545,7 @@ public class AndroidUtilities {
     }
 
     public static String getDataColumn(Context context, Uri uri, String selection,
-            String[] selectionArgs) {
+                                       String[] selectionArgs) {
 
         Cursor cursor = null;
         final String column = "_data";

@@ -112,8 +112,8 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     public View createView(Context context) {
         actionBar.setBackgroundColor(Theme.ACTION_BAR_MEDIA_PICKER_COLOR);
         actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_PICKER_SELECTOR_COLOR);
-        // actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setBackText(context.getString(R.string.Cancel));
+        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        //actionBar.setBackText(context.getString(R.string.Cancel));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -158,17 +158,15 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             ActionBarMenu menu = actionBar.createMenu();
             dropDownContainer = new ActionBarMenuItem(context, menu, 0);
             dropDownContainer.setSubMenuOpenSide(1);
-            dropDownContainer.addSubItem(item_photos,context.getString(
-                    R.string.PickerPhotos), 0);
-            dropDownContainer.addSubItem(item_video,context.getString(
-                    R.string.PickerVideo), 0);
+            dropDownContainer.addSubItem(item_photos, context.getString(R.string.PickerPhotos), 0);
+            dropDownContainer.addSubItem(item_video, context.getString(R.string.PickerVideo), 0);
             actionBar.addView(dropDownContainer);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
-                    .getLayoutParams();
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer.getLayoutParams();
             layoutParams.height = LayoutHelper.MATCH_PARENT;
             layoutParams.width = LayoutHelper.WRAP_CONTENT;
-            // layoutParams.rightMargin = AndroidUtilities.dp(40);
-            // layoutParams.leftMargin = AndroidUtilities.getRealScreenSize().x / 2;
+             layoutParams.rightMargin = AndroidUtilities.dp(40);
+//             layoutParams.leftMargin = AndroidUtilities.getRealScreenSize().x / 2;
+             layoutParams.leftMargin = AndroidUtilities.dp(56);
             layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
             dropDownContainer.setLayoutParams(layoutParams);
             dropDownContainer.setOnClickListener(new View.OnClickListener() {
@@ -186,8 +184,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             dropDown.setEllipsize(TextUtils.TruncateAt.END);
             dropDown.setTextColor(0xffffffff);
             // dropDown.getPaint().setFakeBoldText(true);
-            dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down,
-                    0);
+            dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down, 0);
             dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
 //            dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
             dropDown.setText(R.string.PickerPhotos);
@@ -535,8 +532,8 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             if (!AndroidUtilities.isTablet()) {
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
                         .getLayoutParams();
-                layoutParams.topMargin = (Build.VERSION.SDK_INT >= 21
-                        ? AndroidUtilities.statusBarHeight : 0);
+                /*layoutParams.topMargin = (Build.VERSION.SDK_INT >= 21
+                        ? AndroidUtilities.statusBarHeight : 0);*/
                 dropDownContainer.setLayoutParams(layoutParams);
             }
 
@@ -550,7 +547,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     }
 
     private void openPhotoPicker(MediaController.AlbumEntry albumEntry, int type,
-            boolean withAnim) {
+                                 boolean withAnim) {
         currentPhotoPickerActivity = new PhotoPickerActivity(type, limitPickPhoto, albumEntry,
                 selectedPhotos, null, singlePhoto);
         currentPhotoPickerActivity

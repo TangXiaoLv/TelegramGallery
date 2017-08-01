@@ -17,7 +17,7 @@ ext {
     siteUrl = 'https://github.com/TangXiaoLv/TelegramGallery'
     gitUrl = 'https://github.com/TangXiaoLv/TelegramGallery.git'
 
-    libraryVersion = '1.0.3'
+    libraryVersion = '1.0.4'
 
     developerId = 'tangxiaolv'
     developerName = 'Tang XiaoLv'
@@ -43,7 +43,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                cFlags "-std=c99"
+                cFlags "-std=c11"
                 cppFlags "-std=c++11 -frtti -fexceptions"
                 arguments "-DANDROID_STL=gnustl_static"
             }
@@ -59,12 +59,23 @@ android {
     publishNonDefault true
     externalNativeBuild {
         cmake {
-            path 'src/main/cpp/CMakeLists.txt'
+            //path 'src/main/cpp/CMakeLists.txt'
+        }
+
+        ndkBuild {
+            //path 'src/main/jni/Android.mk'
         }
     }
+
+    sourceSets.main {
+        jni.srcDirs = []
+        jniLibs.srcDir 'src/main/libs'
+    }
 }
+
+dependencies {
+}
+
 // Place it at the end of the file
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
-dependencies {
-}

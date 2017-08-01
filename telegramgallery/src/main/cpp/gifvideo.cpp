@@ -272,4 +272,4 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIE
     }
     return 0;
 }
-}
+} //END "C"

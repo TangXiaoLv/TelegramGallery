@@ -558,10 +558,10 @@ public class ActionBarMenuItem extends FrameLayout {
             }
         } else {
             if (show) {
-                popupWindow.showAsDropDown(this, -AndroidUtilities.dp(8), offsetY);
+                popupWindow.showAsDropDown(this, -AndroidUtilities.dp(10), offsetY);
             }
             if (update) {
-                popupWindow.update(this, -AndroidUtilities.dp(8), offsetY, -1, -1);
+                popupWindow.update(this, -AndroidUtilities.dp(10), offsetY, -1, -1);
             }
         }
     }

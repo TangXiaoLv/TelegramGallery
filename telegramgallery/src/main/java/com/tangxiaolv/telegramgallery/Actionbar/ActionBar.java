@@ -441,8 +441,8 @@ public class ActionBar extends FrameLayout {
         int actionBarHeight = getCurrentActionBarHeight();
         int actionBarHeightSpec = MeasureSpec.makeMeasureSpec(actionBarHeight, MeasureSpec.EXACTLY);
 
-        setMeasuredDimension(width, actionBarHeight
-                + (occupyStatusBar ? AndroidUtilities.statusBarHeight : 0) + extraHeight);
+        setMeasuredDimension(width, actionBarHeight/*
+                + (occupyStatusBar ? AndroidUtilities.statusBarHeight : 0)*/ + extraHeight);
 
         int textLeft;
         if (backContainer != null && backContainer.getVisibility() != GONE) {
@@ -504,7 +504,8 @@ public class ActionBar extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int additionalTop = occupyStatusBar ? AndroidUtilities.statusBarHeight : 0;
+//        int additionalTop = occupyStatusBar ? AndroidUtilities.statusBarHeight : 0;
+        int additionalTop= 0 ;
 
         int textLeft;
         if (backContainer != null && backContainer.getVisibility() != GONE) {
@@ -693,7 +694,7 @@ public class ActionBar extends FrameLayout {
                 .getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return AndroidUtilities.dp(48);
         } else {
-            return AndroidUtilities.dp(56);
+            return AndroidUtilities.dp(48);
         }
     }
 
