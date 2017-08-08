@@ -9,7 +9,7 @@ Fast，efficiently，low memory selector of album,extract from [Telegram](https:
 ### Gradle
 ```
 dependencies {
-    compile 'com.library.tangxiaolv:telegramgallery:1.0.4'
+    compile 'com.library.tangxiaolv:telegramgallery:1.0.5'
 }
 ```
 
