@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="divider">#dcdcdc</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <!-- 分割线 -->
+    <color name="guide_divider">#dfe1e0</color>
+    <color name="guide_blue">#007aff</color>
+    <!-- 标准浅灰 -->
+    <color name="guide_light_gray">#b3b3b3</color>
+    <!-- 灰色 -->
+    <color name="guide_gray">#838383</color>
+    <color name="f1f0ee">#f1f0ee</color>
+    <color name="divider">#dddee3</color>
 </resources>

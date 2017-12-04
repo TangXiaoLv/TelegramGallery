@@ -28,17 +28,17 @@ ext {
     allLicenses = ["Apache-2.0"]
 }
 android {
-    compileSdkVersion 25
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
         ndk {
-            abiFilters 'armeabi'//,'x86'//, 'armeabi-v7a'//, 'x86'//, 'x86_6 4', 'arm64-v8a'
+            abiFilters 'armeabi-v7a'//,'x86'//, 'armeabi-v7a'//, 'x86'//, 'x86_6 4', 'arm64-v8a'
         }
 
         externalNativeBuild {
@@ -56,7 +56,7 @@ android {
         }
     }
 
-    publishNonDefault true
+    //publishNonDefault true
     externalNativeBuild {
         cmake {
             //path 'src/main/cpp/CMakeLists.txt'
@@ -74,6 +74,8 @@ android {
 }
 
 dependencies {
+    compile 'com.android.support:support-annotations:26.1.0'
+    compile 'com.googlecode.mp4parser:isoparser:1.0.6'
 }
 
 // Place it at the end of the file

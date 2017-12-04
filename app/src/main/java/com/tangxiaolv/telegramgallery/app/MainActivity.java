@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
                 ImageView view = new ImageView(MainActivity.this);
                 view.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                view.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        256));
+                view.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 256));
                 String path = (String) getItem(position);
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inPreferredConfig = Bitmap.Config.ARGB_4444;
@@ -73,10 +72,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 GalleryConfig config = new GalleryConfig.Build()
-                        .limitPickPhoto(3)
-                        .singlePhoto(false)
-                        .hintOfPick("this is pick hint")
-                        .filterMimeTypes(new String[]{})
+                        .setLimitPickPhoto(9)
+                        .setSinglePhoto(false)
+                        .setHasOriginalPic(true)
+                        .setHasVideo(true)
+                        .setMaxImageSize(1024 * 1024 * 5)
+                        .setMaxVideoTime(8)
                         .build();
                 GalleryActivity.openActivity(MainActivity.this, reqCode, config);
             }
@@ -86,7 +87,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 GalleryConfig config = new GalleryConfig.Build()
-                        .singlePhoto(true).build();
+                        .setSinglePhoto(true)
+                        .setHasOriginalPic(true)
+                        .setHasVideo(true)
+                        .build();
                 GalleryActivity.openActivity(MainActivity.this, reqCode, config);
             }
         });

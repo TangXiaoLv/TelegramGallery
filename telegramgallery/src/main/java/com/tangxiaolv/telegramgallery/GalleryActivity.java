@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarLayout;
-import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
-import com.tangxiaolv.telegramgallery.Utils.ImageLoader;
+import com.tangxiaolv.telegramgallery.actionbar.ActionBarLayout;
+import com.tangxiaolv.telegramgallery.actionbar.BaseFragment;
+import com.tangxiaolv.telegramgallery.entity.MediaInfo;
+import com.tangxiaolv.telegramgallery.utils.GalleryImageLoader;
 
 import java.util.ArrayList;
 
@@ -23,9 +26,12 @@ import java.util.ArrayList;
 public class GalleryActivity extends Activity implements ActionBarLayout.ActionBarLayoutDelegate {
 
     public static final String PHOTOS = "PHOTOS";
+    public static final String IS_ORIGINAL = "IS_ORIGINAL";
     public static final String VIDEO = "VIDEOS";
+    public static final String MEDIA_INFO = "MEDIA_INFO";
 
-    private static final String GALLERY_CONFIG = "GALLERY_CONFIG";
+    private static final String GALLERY_CONFIG = "GalleryConfig";
+    private static GalleryConfig CONFIG;
 
     private ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
     private ActionBarLayout actionBarLayout;
@@ -35,11 +41,15 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
+        if (getIntent() == null || getIntent().getSerializableExtra(GALLERY_CONFIG) == null) {
+            return;
+        }
         Gallery.init(getApplication());
+        CONFIG = (GalleryConfig) getIntent().getSerializableExtra(GALLERY_CONFIG);
 
-        FrameLayout mian = (FrameLayout) findViewById(R.id.mian);
+        FrameLayout main = (FrameLayout) findViewById(R.id.mian);
         actionBarLayout = new ActionBarLayout(this);
-        mian.addView(actionBarLayout);
+        main.addView(actionBarLayout);
         actionBarLayout.init(mainFragmentsStack);
         actionBarLayout.setDelegate(this);
 
@@ -47,7 +57,7 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
         if (checkCallingOrSelfPermission(
                 READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= 23) {
-                requestPermissions(new String[] {
+                requestPermissions(new String[]{
                         READ_EXTERNAL_STORAGE
                 }, 1);
                 return;
@@ -57,42 +67,34 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         showContent();
+        if (grantResults.length > 0) {
+            Toast.makeText(this, R.string.album_read_fail, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showContent() {
-        Intent intent = getIntent();
-        GalleryConfig config = intent.getParcelableExtra(GALLERY_CONFIG);
-        albumPickerActivity = new PhotoAlbumPickerActivity(
-                config.getFilterMimeTypes(),
-                config.getLimitPickPhoto(),
-                config.isSinglePhoto(),
-                config.getHintOfPick(),
-                false);
+        albumPickerActivity = new PhotoAlbumPickerActivity(true);
         albumPickerActivity.setDelegate(mPhotoAlbumPickerActivityDelegate);
         actionBarLayout.presentFragment(albumPickerActivity, false, true, true);
     }
 
     private PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate mPhotoAlbumPickerActivityDelegate = new PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate() {
-        @Override
-        public void didSelectPhotos(ArrayList<String> photos, ArrayList<String> captions) {
-            Intent intent = new Intent();
-            intent.putExtra(PHOTOS, photos);
-            setResult(Activity.RESULT_OK, intent);
-        }
 
         @Override
-        public boolean didSelectVideo(String path) {
-            Intent intent = new Intent();
-            intent.putExtra(VIDEO, path);
-            setResult(Activity.RESULT_OK, intent);
-            return true;
-        }
-
-        @Override
-        public void startPhotoSelectActivity() {
+        public void didSelectMedia(ArrayList<MediaInfo> medias) {
+            if (medias.size() > 0) {
+                ArrayList<Object> paths = new ArrayList<>();
+                for (MediaInfo info : medias) {
+                    paths.add(info.getPath());
+                }
+                Intent intent = new Intent();
+                intent.putExtra(PHOTOS, paths);
+                intent.putExtra(IS_ORIGINAL, Gallery.sOriginChecked);
+                intent.putExtra(MEDIA_INFO, medias);
+                setResult(Activity.RESULT_OK, intent);
+            }
         }
     };
 
@@ -106,10 +108,13 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     public void onBackPressed() {
         if (PhotoViewer.getInstance().isVisible()) {
             PhotoViewer.getInstance().closePhoto(true, false);
+        } else if (mainFragmentsStack.size() <= 2) {
+            finish();
         } else {
             actionBarLayout.onBackPressed();
         }
     }
+
 
     @Override
     protected void onPause() {
@@ -123,6 +128,9 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     @Override
     protected void onResume() {
         super.onResume();
+        if (null == actionBarLayout) {
+            return;
+        }
         actionBarLayout.onResume();
         if (PhotoViewer.getInstance().isVisible()) {
             PhotoViewer.getInstance().onResume();
@@ -139,8 +147,7 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
     }
 
     @Override
-    public boolean needPresentFragment(BaseFragment fragment, boolean removeLast,
-            boolean forceWithoutAnimation, ActionBarLayout layout) {
+    public boolean needPresentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, ActionBarLayout layout) {
         return true;
     }
 
@@ -172,52 +179,48 @@ public class GalleryActivity extends Activity implements ActionBarLayout.ActionB
 
     @Override
     protected void onDestroy() {
-        PhotoViewer.getInstance().destroyPhotoViewer();
-        ImageLoader.getInstance().clearMemory();
-        albumPickerActivity.removeSelfFromStack();
-        actionBarLayout.clear();
-        mainFragmentsStack.clear();
-        mainFragmentsStack = null;
-        actionBarLayout = null;
-        albumPickerActivity = null;
         super.onDestroy();
+        PhotoViewer.getInstance().destroyPhotoViewer();
+        GalleryImageLoader.getInstance().clearMemory();
+        if (null != albumPickerActivity) {
+            albumPickerActivity.removeSelfFromStack();
+            albumPickerActivity = null;
+        }
+        if (null != mainFragmentsStack) {
+            mainFragmentsStack.clear();
+            mainFragmentsStack = null;
+        }
+        actionBarLayout = null;
+        //相册状态量复位
+        Gallery.sOriginChecked = false;
+        Gallery.sListItemClickable = true;
     }
 
     /**
      * open gallery
-     * 
-     * @param activity parent activity
+     *
+     * @param activity    parent activity
      * @param requestCode {@link Activity#onActivityResult}
-     * @param config {@link GalleryConfig}
+     * @param config      {@link GalleryConfig}
      */
     public static void openActivity(Activity activity, int requestCode, GalleryConfig config) {
         Intent intent = new Intent(activity, GalleryActivity.class);
         intent.putExtra(GALLERY_CONFIG, config);
         activity.startActivityForResult(intent, requestCode);
+        activity.overridePendingTransition(
+                config.getEnterAnim() != -1 ? config.getEnterAnim() : R.anim.push_bottom_in, 0);
+        activity.overridePendingTransition(R.anim.push_bottom_in, 0);
     }
 
-    @Deprecated
-    public static void openActivity(
-            Activity activity,
-            String[] filterMimeTypes,
-            boolean singlePhoto,
-            int limitPickPhoto,
-            int requestCode) {
-        GalleryConfig.Build build = new GalleryConfig.Build();
-        build.filterMimeTypes(filterMimeTypes)
-                .singlePhoto(singlePhoto)
-                .limitPickPhoto(limitPickPhoto);
-        openActivity(activity, requestCode, build.build());
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(
+                0, CONFIG.getExitAnim() != -1 ? CONFIG.getExitAnim() : R.anim.push_bottom_out);
+        overridePendingTransition(0, R.anim.push_bottom_out);
     }
 
-    @Deprecated
-    public static void openActivity(Activity activity, boolean singlePhoto, int limitPickPhoto,
-            int requestCode) {
-        openActivity(activity, null, singlePhoto, limitPickPhoto, requestCode);
-    }
-
-    @Deprecated
-    public static void openActivity(Activity activity, boolean singlePhoto, int requestCode) {
-        openActivity(activity, null, singlePhoto, 1, requestCode);
+    public static GalleryConfig getConfig() {
+        return CONFIG;
     }
 }

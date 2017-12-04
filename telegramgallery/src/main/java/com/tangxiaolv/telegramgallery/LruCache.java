@@ -1,9 +1,9 @@
 package com.tangxiaolv.telegramgallery;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.util.ArrayMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -111,12 +111,12 @@ public class LruCache {
      */
     private void trimToSize(int maxSize, String justAdded) {
         synchronized (this) {
-            Iterator<HashMap.Entry<String, BitmapDrawable>> iterator = map.entrySet().iterator();
+            Iterator<ArrayMap.Entry<String, BitmapDrawable>> iterator = map.entrySet().iterator();
             while (iterator.hasNext()) {
                 if (size <= maxSize || map.isEmpty()) {
                     break;
                 }
-                HashMap.Entry<String, BitmapDrawable> entry = iterator.next();
+                ArrayMap.Entry<String, BitmapDrawable> entry = iterator.next();
 
                 String key = entry.getKey();
                 if (justAdded != null && justAdded.equals(key)) {

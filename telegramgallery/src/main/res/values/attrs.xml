@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GifTextureView">
+        <attr name="gifSource" format="reference|string"/>
+        <attr name="isOpaque" format="boolean"/>
+    </declare-styleable>
+    <declare-styleable name="GifView">
+        <attr name="freezesAnimation" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="IntensifyImageView">
+        <attr name="scaleType" format="enum">
+            <enum name="fitAuto" value="1" />
+            <enum name="fitCenter" value="2" />
+        </attr>
+        <attr name="animateScaleType" format="boolean" />
+        <attr name="maximumScale" format="float" />
+        <attr name="minimumScale" format="float" />
+        <attr name="scale" format="float" />
+    </declare-styleable>
+</resources>

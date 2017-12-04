@@ -11,7 +11,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 
-import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
+import com.tangxiaolv.telegramgallery.utils.AndroidUtilities;
 
 public class Theme {
 
