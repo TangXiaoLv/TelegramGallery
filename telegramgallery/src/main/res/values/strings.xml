@@ -32,4 +32,21 @@
     <string name="Cancel">Cancel</string>
     <string name="Preview">Preview</string>
     <string name="album_read_fail">Failed to read an album, please check permissions</string>
+
+    <!--相册-->
+    <string name="AllMedia">all media</string>
+    <string name="Gallery">Gallery</string>
+    <string name="MostSelectWithVideo">You can choose up to %d images or video.</string>
+    <string name="MostSelectOfPhoto">You can choose up to %d images.</string>
+    <string name="LimitTimeOfVideo">Can not send more than %s of video.</string>
+    <string name="LimitHintOfVideo">Can not send more than %s of video.</string>
+    <string name="SizeOutOfRange">too large of image</string>
+    <string name="PartSizeOutOfRange">part of images is too large</string>
+    <string name="NoImageAndVideo">can not select either image or video at the same time.</string>
+    <string name="VideoTimeOutOfRange">video can not exceed %ds</string>
+    <string name="InvalidVideo">invalid video</string>
+
+    <string name="SendWithNum">send(%d)</string>
+    <string name="Original">origin</string>
+    <string name="edit">edit</string>
 </resources>

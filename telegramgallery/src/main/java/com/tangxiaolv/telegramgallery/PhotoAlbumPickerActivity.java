@@ -4,9 +4,10 @@ package com.tangxiaolv.telegramgallery;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -19,42 +20,38 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBar;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenu;
-import com.tangxiaolv.telegramgallery.Actionbar.ActionBarMenuItem;
-import com.tangxiaolv.telegramgallery.Actionbar.BaseFragment;
-import com.tangxiaolv.telegramgallery.Components.PhotoPickerAlbumsCell;
-import com.tangxiaolv.telegramgallery.Components.PhotoPickerSearchCell;
-import com.tangxiaolv.telegramgallery.Utils.AndroidUtilities;
-import com.tangxiaolv.telegramgallery.Utils.LayoutHelper;
-import com.tangxiaolv.telegramgallery.Utils.MediaController;
-import com.tangxiaolv.telegramgallery.Utils.NotificationCenter;
+import com.tangxiaolv.telegramgallery.actionbar.ActionBar;
+import com.tangxiaolv.telegramgallery.actionbar.ActionBarMenuItem;
+import com.tangxiaolv.telegramgallery.actionbar.BaseFragment;
+import com.tangxiaolv.telegramgallery.components.PhotoPickerAlbumsCell;
+import com.tangxiaolv.telegramgallery.tl.FileLocation;
+import com.tangxiaolv.telegramgallery.utils.AndroidUtilities;
+import com.tangxiaolv.telegramgallery.utils.LayoutHelper;
+import com.tangxiaolv.telegramgallery.utils.LocaleController;
+import com.tangxiaolv.telegramgallery.utils.MediaController;
+import com.tangxiaolv.telegramgallery.utils.NotificationCenter;
+import com.tangxiaolv.telegramgallery.entity.MediaInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+import static com.tangxiaolv.telegramgallery.GalleryActivity.getConfig;
+import static com.tangxiaolv.telegramgallery.utils.Constants.DARK_THEME;
+import static com.tangxiaolv.telegramgallery.utils.VideoUtils.createDecoder;
+import static com.tangxiaolv.telegramgallery.utils.VideoUtils.destroyDecoder;
 
 public class PhotoAlbumPickerActivity extends BaseFragment
         implements NotificationCenter.NotificationCenterDelegate {
 
-
-    public interface PhotoAlbumPickerActivityDelegate {
-        void didSelectPhotos(ArrayList<String> photos, ArrayList<String> captions);
-
-        boolean didSelectVideo(String path);
-
-        void startPhotoSelectActivity();
+    interface PhotoAlbumPickerActivityDelegate {
+        void didSelectMedia(ArrayList<MediaInfo> medias);
     }
-
-    public static int limitPickPhoto;
-    public static String sHintOfPick;
-    public static boolean DarkTheme = true;
 
     private ArrayList<MediaController.AlbumEntry> albumsSorted = null;
     private ArrayList<MediaController.AlbumEntry> videoAlbumsSorted = null;
-    private HashMap<Integer, MediaController.PhotoEntry> selectedPhotos = new HashMap<>();
-    private HashMap<Integer, Integer> checkboxTag = new HashMap<>();
-    private List<MediaController.PhotoEntry> selectedPhotosSortEnd = new ArrayList<>();
+    private LinkedHashMap<Integer, MediaController.PhotoEntry> selectedPhotos =
+            new LinkedHashMap<>(getConfig().getLimitPickPhoto());
     private boolean loading = false;
 
     private int columnsCount = 2;
@@ -69,9 +66,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     private boolean singlePhoto;
     private boolean allowGifs;
     private int selectedMode;
-    private final String[] filterMimeTypes;
-
-    private final int[] imageCheckIndexArr;
+    private int limitPickPhoto;
 
     private PhotoAlbumPickerActivityDelegate delegate;
     private PhotoPickerActivity currentPhotoPickerActivity;
@@ -79,24 +74,20 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     private final static int item_photos = 2;
     private final static int item_video = 3;
 
-    public PhotoAlbumPickerActivity(String[] filterMimeTypes,
-                                    int limitPick,
-                                    boolean singlePhoto,
-                                    String hintOfPick,
-                                    boolean allowGifs) {
+    //非预览中被选择的图片imageId:corner
+    private final LinkedHashMap<Integer, Integer> unPreviewCheckeds = new LinkedHashMap<>(limitPickPhoto);
+
+    public PhotoAlbumPickerActivity(boolean allowGifs) {
         super();
-        limitPickPhoto = limitPick;
-        sHintOfPick = hintOfPick;
-        this.filterMimeTypes = filterMimeTypes;
-        this.imageCheckIndexArr = new int[limitPick];
-        this.singlePhoto = singlePhoto;
+        this.limitPickPhoto = getConfig().getLimitPickPhoto();
+        this.singlePhoto = getConfig().isSinglePhoto();
         this.allowGifs = allowGifs;
     }
 
     @Override
     public boolean onFragmentCreate() {
         loading = true;
-        MediaController.loadGalleryPhotosAlbums(classGuid, filterMimeTypes);
+        MediaController.loadGalleryPhotosAlbums(classGuid, getConfig().getFilterMimeTypes());
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.albumsDidLoaded);
         return super.onFragmentCreate();
     }
@@ -110,10 +101,10 @@ public class PhotoAlbumPickerActivity extends BaseFragment
     @SuppressWarnings("unchecked")
     @Override
     public View createView(Context context) {
-        actionBar.setBackgroundColor(Theme.ACTION_BAR_MEDIA_PICKER_COLOR);
+        actionBar.setBackgroundColor(DARK_THEME ? Theme.ACTION_BAR_MEDIA_PICKER_COLOR : 0xfff9f9f9);
         actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_PICKER_SELECTOR_COLOR);
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        //actionBar.setBackText(context.getString(R.string.Cancel));
+        // actionBar.setBackButtonImage(R.drawable.album_ab_back);
+        actionBar.setBackText(LocaleController.getString("Cancel", R.string.Cancel));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -122,7 +113,6 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                 } else if (id == 1) {
                     if (delegate != null) {
                         finishFragment(false);
-                        delegate.startPhotoSelectActivity();
                     }
                 } else if (id == item_photos) {
                     if (selectedMode == 0) {
@@ -130,8 +120,8 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                     }
                     selectedMode = 0;
                     dropDown.setText(
-                            R.string.PickerPhotos);
-                    emptyView.setText(R.string.NoPhotos);
+                            LocaleController.getString("PickerPhotos", R.string.PickerPhotos));
+                    emptyView.setText(LocaleController.getString("NoPhotos", R.string.NoPhotos));
                     listAdapter.notifyDataSetChanged();
                 } else if (id == item_video) {
                     if (selectedMode == 1) {
@@ -139,65 +129,19 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                     }
                     selectedMode = 1;
                     dropDown.setText(
-                            R.string.PickerVideo);
-                    emptyView.setText(R.string.NoVideo);
+                            LocaleController.getString("PickerVideo", R.string.PickerVideo));
+                    emptyView.setText(LocaleController.getString("NoVideo", R.string.NoVideo));
                     listAdapter.notifyDataSetChanged();
                 }
             }
         });
 
-
         fragmentView = new FrameLayout(context);
 
         FrameLayout frameLayout = (FrameLayout) fragmentView;
-        frameLayout.setBackgroundColor(DarkTheme ? 0xff000000 : 0xffffffff);
-        //==============videos pick====================
-        if (!singlePhoto) {
-            selectedMode = 0;
+        frameLayout.setBackgroundColor(DARK_THEME ? 0xff000000 : 0xffffffff);
 
-            ActionBarMenu menu = actionBar.createMenu();
-            dropDownContainer = new ActionBarMenuItem(context, menu, 0);
-            dropDownContainer.setSubMenuOpenSide(1);
-            dropDownContainer.addSubItem(item_photos, context.getString(R.string.PickerPhotos), 0);
-            dropDownContainer.addSubItem(item_video, context.getString(R.string.PickerVideo), 0);
-            actionBar.addView(dropDownContainer);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer.getLayoutParams();
-            layoutParams.height = LayoutHelper.MATCH_PARENT;
-            layoutParams.width = LayoutHelper.WRAP_CONTENT;
-             layoutParams.rightMargin = AndroidUtilities.dp(40);
-//             layoutParams.leftMargin = AndroidUtilities.getRealScreenSize().x / 2;
-             layoutParams.leftMargin = AndroidUtilities.dp(56);
-            layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-            dropDownContainer.setLayoutParams(layoutParams);
-            dropDownContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dropDownContainer.toggleSubMenu();
-                }
-            });
-
-            dropDown = new TextView(context);
-            dropDown.setGravity(Gravity.LEFT);
-            dropDown.setSingleLine(true);
-            dropDown.setLines(1);
-            dropDown.setMaxLines(1);
-            dropDown.setEllipsize(TextUtils.TruncateAt.END);
-            dropDown.setTextColor(0xffffffff);
-            // dropDown.getPaint().setFakeBoldText(true);
-            dropDown.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down, 0);
-            dropDown.setCompoundDrawablePadding(AndroidUtilities.dp(4));
-//            dropDown.setPadding(0, 0, AndroidUtilities.dp(10), 0);
-            dropDown.setText(R.string.PickerPhotos);
-            dropDownContainer.addView(dropDown);
-            layoutParams = (FrameLayout.LayoutParams) dropDown.getLayoutParams();
-            layoutParams.width = LayoutHelper.WRAP_CONTENT;
-            layoutParams.height = LayoutHelper.WRAP_CONTENT;
-//            layoutParams.leftMargin = AndroidUtilities.dp(dropDown.getTextSize());
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
-            dropDown.setLayoutParams(layoutParams);
-        } else {
-            actionBar.setTitle(context.getString(R.string.Album));
-        }
+        actionBar.setTitle(LocaleController.getString("Gallery", R.string.Gallery));
 
         listView = new ListView(context);
         listView.setPadding(AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4),
@@ -222,10 +166,10 @@ public class PhotoAlbumPickerActivity extends BaseFragment
 
         emptyView = new TextView(context);
         emptyView.setTextColor(0xff808080);
-        emptyView.setTextSize(20);
+        emptyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setVisibility(View.GONE);
-        emptyView.setText(R.string.NoPhotos);
+        emptyView.setText(LocaleController.getString("NoPhotos", R.string.NoPhotos));
         frameLayout.addView(emptyView);
         layoutParams = (FrameLayout.LayoutParams) emptyView.getLayoutParams();
         layoutParams.width = LayoutHelper.MATCH_PARENT;
@@ -256,29 +200,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         layoutParams.gravity = Gravity.CENTER;
         progressView.setLayoutParams(layoutParams);
 
-        // pickerBottomLayout = new PickerBottomLayout(context);
-        // pickerBottomLayout.cancelButton.setVisibility(singlePhoto ? View.GONE : View.VISIBLE);
-        // frameLayout.addView(pickerBottomLayout);
-        // layoutParams = (FrameLayout.LayoutParams) pickerBottomLayout.getLayoutParams();
-        // layoutParams.width = LayoutHelper.MATCH_PARENT;
-        // layoutParams.height = AndroidUtilities.dp(48);
-        // layoutParams.gravity = Gravity.BOTTOM;
-        // pickerBottomLayout.setLayoutParams(layoutParams);
-        // pickerBottomLayout.cancelButton.setOnClickListener(new View.OnClickListener() {
-        // @Override
-        // public void onClick(View view) {
-        // openPreview();
-        // }
-        // });
-        // pickerBottomLayout.doneButton.setOnClickListener(new View.OnClickListener() {
-        // @Override
-        // public void onClick(View view) {
-        // sendSelectedPhotos();
-        // finishFragment();
-        // }
-        // });
-
-        if (loading && (albumsSorted == null || albumsSorted != null && albumsSorted.isEmpty())) {
+        if (loading && (albumsSorted == null || albumsSorted.isEmpty())) {
             progressView.setVisibility(View.VISIBLE);
             listView.setEmptyView(null);
         } else {
@@ -286,33 +208,62 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             listView.setEmptyView(emptyView);
         }
 
-        // pickerBottomLayout.updateSelectedCount(selectedPhotos.size() + selectedWebPhotos.size(),
-        // true);
-
         return fragmentView;
     }
 
-    public void openPreview() {
+    private void openPreview() {
         final List<Object> selectPhotos = computeSelectPhotos();
         if (selectPhotos != null) {
             PhotoViewer.getInstance().setParentActivity(getParentActivity());
-            PhotoViewer.getInstance().openPhotoForSelect(selectPhotos, true, 0,
-                    singlePhoto ? 1 : 0, new CustomProvider(selectPhotos));
+            PhotoViewer.getInstance().openPhotoForSelect(selectPhotos, true, 0, new CustomProvider(selectPhotos));
         }
     }
 
     public class CustomProvider extends PhotoViewer.PreviewEmptyPhotoViewerProvider {
 
+        private MediaController.PhotoEntry[] originArr;
         private MediaController.PhotoEntry[] selectArr;
         private MediaController.PhotoEntry[] removedArr;
 
         public CustomProvider(List<Object> selectPhotos) {
             int size = selectPhotos.size();
+            originArr = new MediaController.PhotoEntry[size];
             selectArr = new MediaController.PhotoEntry[size];
             removedArr = new MediaController.PhotoEntry[size];
             for (int i = 0; i < size; i++) {
                 selectArr[i] = (MediaController.PhotoEntry) selectPhotos.get(i);
             }
+            System.arraycopy(selectArr, 0, originArr, 0, size);
+        }
+
+        @Override
+        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(FileLocation fileLocation, int index) {
+            MediaController.PhotoEntry entry = originArr[index];
+            PhotoViewer.PlaceProviderObject cell = currentPhotoPickerActivity.getPlaceForPhoto(entry.imageId);
+            if (cell == null) {
+                PhotoViewer.PlaceProviderObject object = new PhotoViewer.PlaceProviderObject();
+                object.viewX = 0;
+                object.viewY = 0;
+                object.imageReceiver = new ImageReceiver();
+                object.parentView = listView;
+                return object;
+            }
+            return cell;
+        }
+
+        @Override
+        public void willSwitchFromPhoto(FileLocation fileLocation, int index) {
+            currentPhotoPickerActivity.willSwitchFromPhoto(fileLocation, index);
+        }
+
+        @Override
+        public Bitmap getThumbForPhoto(FileLocation fileLocation, int index) {
+            return currentPhotoPickerActivity.getThumbForPhoto(fileLocation, index);
+        }
+
+        @Override
+        public void willHidePhotoViewer() {
+            currentPhotoPickerActivity.willHidePhotoViewer();
         }
 
         @Override
@@ -328,8 +279,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         @Override
         public void sendButtonPressed(int index) {
             selectedPhotos.clear();
-            for (int i = 0; i < selectArr.length; i++) {
-                MediaController.PhotoEntry photoEntry = selectArr[i];
+            for (MediaController.PhotoEntry photoEntry : selectArr) {
                 if (photoEntry != null) {
                     selectedPhotos.put(photoEntry.imageId, photoEntry);
                 }
@@ -371,57 +321,28 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         }
 
         @Override
-        public void previewExit() {
-            super.previewExit();
+        public void setIsOriginal(boolean isOriginal) {
+            currentPhotoPickerActivity.setIsOriginal(isOriginal);
+        }
+
+        @Override
+        public List<Object> getSelectedPhotos() {
+            return computeSelectPhotos();
         }
 
         private int getRealCount() {
-            int count = 0;
-            for (int i = 0; i < selectArr.length; i++) {
-                if (selectArr[i] != null) {
-                    count++;
-                }
-            }
-            return count;
+            return selectedPhotos.size();
         }
     }
 
-    public List<Object> computeSelectPhotos() {
+    private List<Object> computeSelectPhotos() {
         int size = selectedPhotos.size();
         if (size > 0) {
-            Object[] obj = new Object[limitPickPhoto];
-            for (Integer i : selectedPhotos.keySet()) {
-                MediaController.PhotoEntry entry = selectedPhotos.get(i);
-                obj[entry.sortindex - 1] = entry;
-            }
-            selectedPhotosSortEnd.clear();
-            List<Object> list = new ArrayList<>();
-            for (int i = 0; i < limitPickPhoto; i++) {
-                Object o = obj[i];
-                if (o != null) {
-                    list.add(o);
-                    selectedPhotosSortEnd.add((MediaController.PhotoEntry) o);
-                }
-            }
-
-            return list;
+            ArrayList<Object> result = new ArrayList<>(limitPickPhoto);
+            result.addAll(selectedPhotos.values());
+            return result;
         }
         return null;
-    }
-
-    private void fillSelectedPhotosSortEnd() {
-        Object[] obj = new Object[limitPickPhoto];
-        for (Integer i : selectedPhotos.keySet()) {
-            MediaController.PhotoEntry entry = selectedPhotos.get(i);
-            obj[entry.sortindex - 1] = entry;
-        }
-        selectedPhotosSortEnd.clear();
-        for (int i = 0; i < limitPickPhoto; i++) {
-            Object o = obj[i];
-            if (o != null) {
-                selectedPhotosSortEnd.add((MediaController.PhotoEntry) o);
-            }
-        }
     }
 
     @Override
@@ -481,20 +402,38 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         if (selectedPhotos.isEmpty() && delegate == null || sendPressed) {
             return;
         }
-        fillSelectedPhotosSortEnd();
         sendPressed = true;
-        ArrayList<String> photos = new ArrayList<>();
-        ArrayList<String> captions = new ArrayList<>();
-        for (MediaController.PhotoEntry photoEntry : selectedPhotosSortEnd) {
-            if (photoEntry.imagePath != null) {
-                photos.add(photoEntry.imagePath);
-                captions.add(photoEntry.caption != null ? photoEntry.caption.toString() : null);
-            } else if (photoEntry.path != null) {
-                photos.add(photoEntry.path);
-                captions.add(photoEntry.caption != null ? photoEntry.caption.toString() : null);
-            }
+        ArrayList<MediaInfo> medias = new ArrayList<>();
+        List<Object> selects = computeSelectPhotos();
+        if (selects == null) {
+            return;
         }
-        delegate.didSelectPhotos(photos, captions);
+
+        int[] metaData = new int[4];
+        for (Object entry : selects) {
+            MediaController.PhotoEntry media = (MediaController.PhotoEntry) entry;
+            MediaInfo info = new MediaInfo();
+            if (media.imagePath != null) {
+                info.setPath(media.imagePath);
+            } else if (media.path != null) {
+                info.setPath(media.path);
+            }
+            info.setSize(media.size);
+            info.setVideoDuration(media.duration);
+            info.setMimeType(media.mimeType);
+            info.setThumbPath(media.thumbPath);
+            info.setTitle(media.title);
+            if (media.mimeType.contains("video")){
+                int ptr = createDecoder(info.getPath(), metaData);
+                destroyDecoder(ptr);
+                info.setWidth(metaData[0]);
+                info.setHeight(metaData[1]);
+                info.setRotation(metaData[2]);
+            }
+            medias.add(info);
+        }
+        delegate.didSelectMedia(medias);
+        AndroidUtilities.cancelToast();
     }
 
     private void fixLayout() {
@@ -532,93 +471,102 @@ public class PhotoAlbumPickerActivity extends BaseFragment
             if (!AndroidUtilities.isTablet()) {
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) dropDownContainer
                         .getLayoutParams();
-                /*layoutParams.topMargin = (Build.VERSION.SDK_INT >= 21
-                        ? AndroidUtilities.statusBarHeight : 0);*/
+                layoutParams.topMargin = (Build.VERSION.SDK_INT >= 21
+                        ? AndroidUtilities.statusBarHeight : 0);
                 dropDownContainer.setLayoutParams(layoutParams);
             }
 
             if (!AndroidUtilities.isTablet() && Gallery.applicationContext.getResources()
                     .getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                dropDown.setTextSize(18);
+                dropDown.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             } else {
-                dropDown.setTextSize(20);
+                dropDown.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             }
         }
     }
 
     private void openPhotoPicker(MediaController.AlbumEntry albumEntry, int type,
                                  boolean withAnim) {
-        currentPhotoPickerActivity = new PhotoPickerActivity(type, limitPickPhoto, albumEntry,
-                selectedPhotos, null, singlePhoto);
-        currentPhotoPickerActivity
-                .setDelegate(new PhotoPickerActivity.PhotoPickerActivityDelegate() {
-                    @Override
-                    public void selectedPhotosChanged() {
-                        // if (pickerBottomLayout != null) {
-                        // pickerBottomLayout.updateSelectedCount(
-                        // selectedPhotos.size() + selectedWebPhotos.size(), true);
-                        // }
-                    }
+        currentPhotoPickerActivity = new PhotoPickerActivity(type, albumEntry, selectedPhotos, singlePhoto);
+        currentPhotoPickerActivity.setDelegate(new PhotoPickerActivity.PhotoPickerActivityDelegate() {
+            //预览中已选择集合，-1为未被选择index:corner
+            private final int[] previewCheckeds = new int[limitPickPhoto];
 
-                    @Override
-                    public void actionButtonPressed(boolean canceled) {
-                        if (!canceled) {
-                            sendSelectedPhotos();
-                        } else {
-                            getParentActivity().finish();
+            @Override
+            public void actionButtonPressed(boolean canceled) {
+                if (!canceled) {
+                    sendSelectedPhotos();
+                } else if (getParentActivity() != null) {
+                    getParentActivity().finish();
+                }
+                removeSelfFromStack();
+            }
+
+            @Override
+            public boolean didSelectVideo(String path) {
+                removeSelfFromStack();
+                return false;
+            }
+
+            @Override
+            public int getCheckboxTag(int imageId) {
+                //返回角标，未选中为-1
+                Integer cornerIndex = unPreviewCheckeds.get(imageId);
+                return cornerIndex == null ? -1 : cornerIndex;
+            }
+
+            @Override
+            public void putCheckboxTag(int imageId, int cornerIndex) {
+                if (PhotoViewer.getInstance().isInPreviewMode()) {
+                    previewCheckeds[cornerIndex - 1] = cornerIndex;
+                }
+                unPreviewCheckeds.put(imageId, cornerIndex);
+            }
+
+            @Override
+            public void removeCheckboxTag(int imageId) {
+                Integer remove = unPreviewCheckeds.remove(imageId);
+                if (remove != null && PhotoViewer.getInstance().isInPreviewMode()) {
+
+                    previewCheckeds[remove - 1] = -1;
+                }
+                int corner = 1;
+                for (Integer id : unPreviewCheckeds.keySet()) {
+                    unPreviewCheckeds.put(id, corner);
+                    corner++;
+                }
+            }
+
+            @Override
+            public int generateCheckCorner() {
+                if (PhotoViewer.getInstance().isInPreviewMode()) {
+                    for (int i = 0; i < limitPickPhoto; i++) {
+                        if (previewCheckeds[i] <= 0) {
+                            return i + 1;
                         }
-                        removeSelfFromStack();
                     }
+                    return -1;
+                }
+                return unPreviewCheckeds.size() + 1;
+            }
 
-                    @Override
-                    public boolean didSelectVideo(String path) {
-                        removeSelfFromStack();
-                        return delegate.didSelectVideo(path);
-                    }
+            @Override
+            public void openPreview() {
+                PhotoAlbumPickerActivity.this.openPreview();
+            }
 
-                    @Override
-                    public int getCheckboxTag(int imageId) {
-                        Integer cornerIndex = checkboxTag.get(imageId);
-                        return cornerIndex == null ? -1 : cornerIndex;
-                    }
-
-                    @Override
-                    public void putCheckboxTag(int imageId, int cornerIndex) {
-                        imageCheckIndexArr[cornerIndex - 1] = cornerIndex;
-                        checkboxTag.put(imageId, cornerIndex);
-                    }
-
-                    @Override
-                    public void removeCheckboxTag(int imageId) {
-                        Integer remove = checkboxTag.remove(imageId);
-                        if (remove != null) {
-                            imageCheckIndexArr[remove - 1] = -1;
-                        }
-                    }
-
-                    @Override
-                    public int generateCheckCorner() {
-                        int length = imageCheckIndexArr.length;
-                        for (int i = 0; i < length; i++) {
-                            if (imageCheckIndexArr[i] <= 0) {
-                                return i + 1;
-                            }
-                        }
-                        return -1;
-                    }
-
-                    @Override
-                    public void openPreview() {
-                        PhotoAlbumPickerActivity.this.openPreview();
-                    }
-                });
+            @Override
+            public PhotoAlbumPickerActivity getPhotoAlbumPickerActivity() {
+                return PhotoAlbumPickerActivity.this;
+            }
+        });
         presentFragment(currentPhotoPickerActivity, false, withAnim);
     }
 
     private class ListAdapter extends BaseFragmentAdapter {
         private Context mContext;
 
-        public ListAdapter(Context context) {
+        ListAdapter(Context context) {
             mContext = context;
         }
 
@@ -635,14 +583,11 @@ public class PhotoAlbumPickerActivity extends BaseFragment
         @Override
         public int getCount() {
             if (singlePhoto || selectedMode == 0) {
-                int count = albumsSorted != null
-                        ? (int) Math.ceil(albumsSorted.size() / (float) columnsCount) : 0;
-                return count;
+                return albumsSorted != null ? (int) Math.ceil(albumsSorted.size() / (float) columnsCount) : 0;
                 // return 1 + (albumsSorted != null
                 // ? (int) Math.ceil(albumsSorted.size() / (float) columnsCount) : 0);
             } else {
-                return (videoAlbumsSorted != null
-                        ? (int) Math.ceil(videoAlbumsSorted.size() / (float) columnsCount) : 0);
+                return (videoAlbumsSorted != null ? (int) Math.ceil(videoAlbumsSorted.size() / (float) columnsCount) : 0);
             }
         }
 
@@ -704,18 +649,6 @@ public class PhotoAlbumPickerActivity extends BaseFragment
                     }
                 }
                 photoPickerAlbumsCell.requestLayout();
-            } else if (type == 1) {
-                // 图片搜索
-                if (view == null) {
-                    view = new PhotoPickerSearchCell(mContext, allowGifs);
-                    ((PhotoPickerSearchCell) view)
-                            .setDelegate(new PhotoPickerSearchCell.PhotoPickerSearchCellDelegate() {
-                                @Override
-                                public void didPressedSearchButton(int index) {
-                                    openPhotoPicker(null, index, false);
-                                }
-                            });
-                }
             }
             return view;
         }

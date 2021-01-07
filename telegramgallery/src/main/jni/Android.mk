@@ -60,7 +60,8 @@ LOCAL_CFLAGS 	:= -w -std=c11 -Os -DNULL=0 -DSOCKLEN_T=socklen_t -DLOCALE_NOT_USE
 LOCAL_CFLAGS 	+= -Drestrict='' -D__EMX__ -DOPUS_BUILD -DFIXED_POINT -DUSE_ALLOCA -DHAVE_LRINT -DHAVE_LRINTF -fno-math-errno
 LOCAL_CFLAGS 	+= -DANDROID_NDK -DDISABLE_IMPORTGL -fno-strict-aliasing -fprefetch-loop-arrays -DAVOID_TABLES -DANDROID_TILE_BASED_DECODE -DANDROID_ARMV6_IDCT -ffast-math -D__STDC_CONSTANT_MACROS
 LOCAL_CPPFLAGS 	:= -DBSD=1 -ffast-math -Os -funroll-loops -std=c++11
-LOCAL_LDLIBS 	:= -ljnigraphics -llog -lz -latomic
+LOCAL_LDLIBS 	:= -ljnigraphics -llog
+#-llog -lz -latomic
 LOCAL_STATIC_LIBRARIES := avformat avcodec avutil
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
@@ -141,6 +142,7 @@ endif
 LOCAL_SRC_FILES     += \
 ./utils.c \
 ./jni.c \
+./video.c \
 ./gifvideo.cpp
 
 include $(BUILD_SHARED_LIBRARY)

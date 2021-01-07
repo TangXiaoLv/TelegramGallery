@@ -1,21 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name" translatable="false">TelegramGallery</string>
+    <!--相册-->
     <string name="PickerPhotos">图片</string>
     <string name="PickerVideo">视频</string>
-    <string name="AllPhotos">所有图片</string>
+    <string name="AllPhotos">所有照片</string>
     <string name="AllVideo">所有视频</string>
+    <string name="AllMedia">所有媒体</string>
     <string name="NoPhotos">还没有图片</string>
     <string name="NoVideo">还没有视频</string>
+    <string name="NoRecentPhotos">No recent photos</string>
+    <string name="NoRecentGIFs">No recent GIFs</string>
     <string name="Crop">剪切</string>
     <string name="AttachPhoto">图片</string>
     <string name="Of">%1$d / %2$d</string>
     <string name="Set">设置</string>
-    <string name="Album">相册</string>
+    <string name="Gallery">相册</string>
 
-    <string name="MostSelect">你最多只能选择%d张图片</string>
+    <string name="ClearButton">Clear</string>
 
-    <string name="Send">完成</string>
+    <string name="MostSelectWithVideo">最多可以选择%d个图片或视频</string>
+    <string name="MostSelectOfPhoto">最多可以选择%d个图片</string>
+    <string name="LimitTimeOfVideo">不能发送超过%s的视频</string>
+    <string name="LimitHintOfVideo">不能发送超过%s的视频，请发送文件</string>
+    <string name="SizeOutOfRange">原图过大</string>
+    <string name="PartSizeOutOfRange">部分原图过大</string>
+    <string name="NoImageAndVideo">不能同时选择图片或视频</string>
+    <string name="VideoTimeOutOfRange">视频不能超过%ds</string>
+    <string name="InvalidVideo">无效的视频</string>
+
+    <string name="Send">发送</string>
+    <string name="SendWithNum">发送(%d)</string>
+    <string name="Original">原图</string>
     <string name="Cancel">取消</string>
     <string name="Preview">预览</string>
+    <string name="edit">编辑</string>
     <string name="album_read_fail">相册读取失败,请检查权限</string>
+
+    <!--dialog相关-->
+    <string name="msg_dialog_important_flag">标记重要</string>
+    <string name="ok">确定</string>
+    <string name="close">关闭</string>
+    <string name="msg_dialog_isread_flag">标为已读</string>
+    <string name="relation_send">发送</string>
+    <string name="find_password">忘记密码</string>
+    <string name="agency_released_reminder">您已经成功发布该服务，可以去“服务机会”中查找需求意向或点击“返回”发布其他服务！</string>
+    <string name="agency_goto_opportunity">去服务机会</string>
+    <string name="agency_goback">返回</string>
+    <string name="agency_shroff_dialog_title">确定不添加吗？</string>
+    <string name="agency_shroff_dialog_content">如果您不添加收款账号，该服务项的支付方式将不能选择“服务后线上支付”！</string>
+    <string name="toonImage_save_photo">保存到本地</string>
+    <string name="sdcard_no_space">sdcard 空间不足</string>
+
+    <string name="gallery_unvalid_photo">不支持的图片类型：%s</string>
 </resources>

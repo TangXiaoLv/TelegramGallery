@@ -5,8 +5,10 @@
 #include <cstdint>
 #include <limits>
 #include <string>
+
 extern "C" {
 #include <libavformat/avformat.h>
+#include <libavutil/eval.h>
     
 static const std::string av_make_error_str(int errnum) {
     char errbuf[AV_ERROR_MAX_STRING_SIZE];
@@ -112,7 +114,7 @@ int decode_packet(VideoInfo *info, int *got_frame) {
     return decoded;
 }
 
-jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_createDecoder(JNIEnv *env, jclass clazz, jstring src, jintArray data) {
+jint Java_com_tangxiaolv_telegramgallery_utils_VideoUtils_createDecoder(JNIEnv *env, jclass clazz, jstring src, jintArray data) {
     VideoInfo *info = new VideoInfo();
     
     char const *srcString = env->GetStringUTFChars(src, 0);
@@ -163,15 +165,25 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_createDecoder(JNIE
     if (dataArr != nullptr) {
         dataArr[0] = info->video_dec_ctx->width;
         dataArr[1] = info->video_dec_ctx->height;
+        AVDictionaryEntry *rotate_tag = av_dict_get(info->video_stream->metadata, "rotate", NULL, 0);
+        if (rotate_tag && *rotate_tag->value && strcmp(rotate_tag->value, "0")) {
+            char *tail;
+            dataArr[2] = (int) av_strtod(rotate_tag->value, &tail);
+            if (*tail) {
+                dataArr[2] = 0;
+            }
+        } else {
+            dataArr[2] = 0;
+        }
         env->ReleaseIntArrayElements(data, dataArr, 0);
     }
     
-    //LOGD("successfully opened file %s", info->src);
+    LOGD("successfully opened file %s", info->src);
     
     return (int) info;
 }
 
-void Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_destroyDecoder(JNIEnv *env, jclass clazz, jobject ptr) {
+void Java_com_tangxiaolv_telegramgallery_utils_VideoUtils_destroyDecoder(JNIEnv *env, jclass clazz, jobject ptr) {
     if (ptr == NULL) {
         return;
     }
@@ -180,7 +192,7 @@ void Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_destroyDecoder(JNI
 }
 
     
-jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIEnv *env, jclass clazz, jobject ptr, jobject bitmap, jintArray data) {
+jint Java_com_tangxiaolv_telegramgallery_utils_VideoUtils_getVideoFrame(JNIEnv *env, jclass clazz, jobject ptr, jobject bitmap, jintArray data) {
     if (ptr == NULL || bitmap == nullptr) {
         return 0;
     }
@@ -191,7 +203,7 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIE
     while (true) {
         if (info->pkt.size == 0) {
             ret = av_read_frame(info->fmt_ctx, &info->pkt);
-            //LOGD("got packet with size %d", info->pkt.size);
+            LOGD("got packet with size %d", info->pkt.size);
             if (ret >= 0) {
                 info->orig_pkt = info->pkt;
             }
@@ -205,7 +217,7 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIE
                 }
                 info->pkt.size = 0;
             } else {
-                //LOGD("read size %d from packet", ret);
+                LOGD("read size %d from packet", ret);
                 info->pkt.data += ret;
                 info->pkt.size -= ret;
             }
@@ -223,7 +235,7 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIE
             }
             if (got_frame == 0) {
                 if (info->has_decoded_frames) {
-                    //LOGD("file end reached %s", info->src);
+                    LOGD("file end reached %s", info->src);
                     if ((ret = avformat_seek_file(info->fmt_ctx, -1, std::numeric_limits<int64_t>::min(), 0, std::numeric_limits<int64_t>::max(), 0)) < 0) {
                         LOGE("can't seek to begin of file %s, %s", info->src, av_err2str(ret));
                         return 0;
@@ -237,19 +249,30 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIE
             return 0;
         }
         if (got_frame) {
-            //LOGD("decoded frame with w = %d, h = %d, format = %d", info->frame->width, info->frame->height, info->frame->format);
-            if (info->frame->format == AV_PIX_FMT_YUV420P || info->frame->format == AV_PIX_FMT_BGRA) {
+            LOGD("decoded frame with w = %d, h = %d, format = %d", info->frame->width, info->frame->height, info->frame->format);
+            if (info->frame->format == AV_PIX_FMT_YUV420P || info->frame->format == AV_PIX_FMT_BGRA || info->frame->format == AV_PIX_FMT_YUVJ420P) {
                 jint *dataArr = env->GetIntArrayElements(data, 0);
+                int wantedWidth;
+                int wantedHeight;
                 if (dataArr != nullptr) {
-                    dataArr[2] = (int) (1000 * info->frame->pkt_pts * av_q2d(info->video_stream->time_base));
+                    wantedWidth = dataArr[0];
+                    wantedHeight = dataArr[1];
+                    dataArr[3] = (int) (1000 * info->frame->pkt_pts * av_q2d(info->video_stream->time_base));
                     env->ReleaseIntArrayElements(data, dataArr, 0);
+                } else {
+                    AndroidBitmapInfo bitmapInfo;
+                    AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
+                    wantedWidth = bitmapInfo.width;
+                    wantedHeight = bitmapInfo.height;
                 }
                 
                 void *pixels;
                 if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
-                    if (info->frame->format == AV_PIX_FMT_YUV420P) {
-                        //LOGD("y %d, u %d, v %d, width %d, height %d", info->frame->linesize[0], info->frame->linesize[2], info->frame->linesize[1], info->frame->width, info->frame->height);
-                        libyuv::I420ToARGB(info->frame->data[0], info->frame->linesize[0], info->frame->data[2], info->frame->linesize[2], info->frame->data[1], info->frame->linesize[1], (uint8_t *) pixels, info->frame->width * 4, info->frame->width, info->frame->height);
+                    if (info->frame->format == AV_PIX_FMT_YUV420P || info->frame->format == AV_PIX_FMT_YUVJ420P) {
+                        LOGD("y %d, u %d, v %d, width %d, height %d", info->frame->linesize[0], info->frame->linesize[2], info->frame->linesize[1], info->frame->width, info->frame->height);
+                        if (wantedWidth == info->frame->width && wantedHeight == info->frame->height || wantedWidth == info->frame->height && wantedHeight == info->frame->width) {
+                            libyuv::I420ToARGB(info->frame->data[0], info->frame->linesize[0], info->frame->data[2], info->frame->linesize[2], info->frame->data[1], info->frame->linesize[1], (uint8_t *) pixels, info->frame->width * 4, info->frame->width, info->frame->height);
+                        }
                     } else if (info->frame->format == AV_PIX_FMT_BGRA) {
                         libyuv::ABGRToARGB(info->frame->data[0], info->frame->linesize[0], (uint8_t *) pixels, info->frame->width * 4, info->frame->width, info->frame->height);
                     }
@@ -261,6 +284,5 @@ jint Java_com_tangxiaolv_telegramgallery_AnimatedFileDrawable_getVideoFrame(JNIE
             return 1;
         }
     }
-    return 0;
 }
 }

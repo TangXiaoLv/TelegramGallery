@@ -1,84 +1,178 @@
 
 package com.tangxiaolv.telegramgallery;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.support.annotation.AnimRes;
+
+import java.io.Serializable;
 
 /**
  * the {@link GalleryActivity} of buidler.
  */
-public class GalleryConfig implements Parcelable {
+public class GalleryConfig implements Serializable {
 
     private String[] filterMimeTypes;
-    private String hintOfPick;
+
     private boolean singlePhoto;
+
+    private boolean hasOriginalPic;
+
     private int limitPickPhoto;
 
-    private GalleryConfig(){
+    private boolean videoEditMode;
 
-    }
+    private boolean hasVideo;
 
-    private GalleryConfig(String[] filterMimeTypes, String hintOfPick, boolean singlePhoto,
-                          int limitPickPhoto) {
-        this.filterMimeTypes = filterMimeTypes;
-        this.hintOfPick = hintOfPick;
-        this.singlePhoto = singlePhoto;
-        this.limitPickPhoto = limitPickPhoto;
-    }
+    private int maxVideoTime;
+
+    private long maxImageSize;
+
+    private int enterAnim;
+
+    private int exitAnim;
 
     public String[] getFilterMimeTypes() {
         return filterMimeTypes;
-    }
-
-    public String getHintOfPick() {
-        return hintOfPick;
     }
 
     public boolean isSinglePhoto() {
         return singlePhoto;
     }
 
+    public boolean hasOriginalPic() {
+        return hasOriginalPic;
+    }
+
     public int getLimitPickPhoto() {
         return limitPickPhoto;
     }
 
+    public int getEnterAnim() {
+        return enterAnim;
+    }
+
+    public int getExitAnim() {
+        return exitAnim;
+    }
+
+    public boolean isVideoEditMode() {
+        return videoEditMode;
+    }
+
+    public int getMaxVideoTime() {
+        return maxVideoTime;
+    }
+
+    public long getMaxImageSize() {
+        return maxImageSize;
+    }
+
+    public boolean hasVideo() {
+        return hasVideo;
+    }
+
+    private GalleryConfig(String[] filterMimeTypes,
+                          boolean singlePhoto,
+                          boolean hasOriginalPic,
+                          int limitPickPhoto,
+                          int enterAnim, int exitAnim,
+                          boolean videoEditMode,
+                          boolean hasVideo,
+                          int maxVideoTime,
+                          long maxImageSize) {
+        this.filterMimeTypes = filterMimeTypes;
+        this.singlePhoto = singlePhoto;
+        this.hasOriginalPic = hasOriginalPic;
+        this.limitPickPhoto = limitPickPhoto;
+        this.enterAnim = enterAnim;
+        this.exitAnim = exitAnim;
+        this.videoEditMode = videoEditMode;
+        this.hasVideo = hasVideo;
+        this.maxVideoTime = maxVideoTime;
+        this.maxImageSize = maxImageSize;
+    }
+
     public static class Build {
         private String[] filterMimeTypes;
-        private String hintOfPick;
         private boolean singlePhoto = false;
+        private boolean hasOriginalPic = false;
         private int limitPickPhoto = 9;
+        private int enterAnim = -1;
+        private int exitAnim = -1;
+        private boolean videoEditMode = false;
+        private boolean hasVideo = false;
+        private int maxVideoTime = 1024 * 1024;//sec
+        private long maxImageSize = 1024 * 1024 * 1024;
 
         /**
-         * @param filterMimeTypes filter of media type， based on MimeType standards：
-         *            {http://www.w3school.com.cn/media/media_mimeref.asp}
-         *            <Li>eg:new string[]{"image/gif","image/jpeg"}
+         * @param filterMimeTypes filter media types，base on MimeType。
+         * @see {http://www.w3school.com.cn/media/media_mimeref.asp} eg:new string[]{"image/gif","image/jpeg"}
+         *
          */
-        public Build filterMimeTypes(String[] filterMimeTypes) {
+        public Build setFilterMimeTypes(String[] filterMimeTypes) {
             this.filterMimeTypes = filterMimeTypes;
             return this;
         }
 
+
         /**
-         * @param hintOfPick hint of Toast when limit is reached
+         * @param singlePhoto is select of single
          */
-        public Build hintOfPick(String hintOfPick) {
-            this.hintOfPick = hintOfPick;
+        public Build setSinglePhoto(boolean singlePhoto) {
+            this.singlePhoto = singlePhoto;
             return this;
         }
 
         /**
-         * @param singlePhoto true:single pick false:multi pick
+         * show button of named 'origin'
          */
-        public Build singlePhoto(boolean singlePhoto) {
-            this.singlePhoto = singlePhoto;
+        public Build setHasOriginalPic(boolean hasOriginalPic) {
+            this.hasOriginalPic = hasOriginalPic;
             return this;
         }
 
         /**
          * @param limitPickPhoto the limit of photos those can be selected
          */
-        public Build limitPickPhoto(int limitPickPhoto) {
+        public Build setLimitPickPhoto(int limitPickPhoto) {
             this.limitPickPhoto = limitPickPhoto;
+            return this;
+        }
+
+        /**
+         * entry animation
+         */
+        public Build setAnimation(@AnimRes int enterAnim, @AnimRes int exitAnim) {
+            this.enterAnim = enterAnim;
+            this.exitAnim = exitAnim;
+            return this;
+        }
+
+        /*public Build setVideoEditMode(boolean videoEditMode) {
+            this.videoEditMode = videoEditMode;
+            return this;
+        }*/
+
+        /**
+         * @param hasVideo has list video
+         */
+        public Build setHasVideo(boolean hasVideo) {
+            this.hasVideo = hasVideo;
+            return this;
+        }
+
+        /**
+         * @param maxVideoTime limit time of be send video unit：sec
+         */
+        public Build setMaxVideoTime(int maxVideoTime) {
+            this.maxVideoTime = maxVideoTime;
+            return this;
+        }
+
+        /**
+         * @param maxImageSize limit size of be send image unit：bytes
+         */
+        public Build setMaxImageSize(int maxImageSize) {
+            this.maxImageSize = maxImageSize;
             return this;
         }
 
@@ -86,41 +180,15 @@ public class GalleryConfig implements Parcelable {
             this.limitPickPhoto = singlePhoto ? 1 : limitPickPhoto > 0 ? limitPickPhoto : 1;
             return new GalleryConfig(
                     filterMimeTypes,
-                    hintOfPick,
                     singlePhoto,
-                    limitPickPhoto);
+                    hasOriginalPic,
+                    limitPickPhoto,
+                    enterAnim,
+                    exitAnim,
+                    videoEditMode,
+                    hasVideo,
+                    maxVideoTime,
+                    maxImageSize);
         }
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(this.filterMimeTypes);
-        dest.writeString(this.hintOfPick);
-        dest.writeByte(this.singlePhoto ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.limitPickPhoto);
-    }
-
-    protected GalleryConfig(Parcel in) {
-        this.filterMimeTypes = in.createStringArray();
-        this.hintOfPick = in.readString();
-        this.singlePhoto = in.readByte() != 0;
-        this.limitPickPhoto = in.readInt();
-    }
-
-    public static final Creator<GalleryConfig> CREATOR = new Creator<GalleryConfig>() {
-        @Override
-        public GalleryConfig createFromParcel(Parcel source) {
-            return new GalleryConfig(source);
-        }
-
-        @Override
-        public GalleryConfig[] newArray(int size) {
-            return new GalleryConfig[size];
-        }
-    };
 }
